@@ -4,20 +4,22 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
+// eslint-disable-next-line no-unused-vars
 module.exports = (env, options) => ({
   optimization: {
     minimizer: [
       new UglifyJsPlugin({ cache: true, parallel: true, sourceMap: false }),
-      new OptimizeCSSAssetsPlugin({})
-    ]
+      new OptimizeCSSAssetsPlugin({}),
+    ],
   },
   entry: {
-    './js/app.js': glob.sync('./vendor/**/*.js').concat(['./js/app.js'])
+    './js/app.js': glob.sync('./vendor/**/*.js').concat(['./js/app.js']),
   },
   output: {
     filename: 'app.js',
-    path: path.resolve(__dirname, '../priv/static/js')
+    path: path.resolve(__dirname, '../priv/static/js'),
   },
   module: {
     rules: [
@@ -25,17 +27,42 @@ module.exports = (env, options) => ({
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader'
-        }
+          loader: 'babel-loader',
+        },
+      },
+      {
+        test: /\.vue$/,
+        use: {
+          loader: 'vue-loader',
+        },
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
-      }
-    ]
+        loader: 'style-loader!css-loader',
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {},
+          },
+          {
+            loader: 'sass-loader',
+            options: {},
+          },
+        ],
+      },
+      {
+        test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+        loader: 'file-loader',
+      },
+    ],
   },
   plugins: [
     new MiniCssExtractPlugin({ filename: '../css/app.css' }),
-    new CopyWebpackPlugin([{ from: 'static/', to: '../' }])
-  ]
+    new CopyWebpackPlugin([{ from: 'static/', to: '../' }]),
+    new VueLoaderPlugin(),
+  ],
 });
