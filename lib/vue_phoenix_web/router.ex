@@ -24,6 +24,7 @@ defmodule VuePhoenixWeb.Router do
 
   scope "/api", VuePhoenixWeb do
     post "/auth", SessionsController, :create
+    post "/register", RegistrationsController, :create
   end
 
   scope "/api", VuePhoenixWeb do

@@ -24,10 +24,10 @@ defmodule VuePhoenix.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:email, :password])
-    |> validate_required([:email])
+    |> validate_required([:email, :password])
     |> unique_constraint(:email)
     |> validate_length(:password, min: 6)
-    |> validate_confirmation(:password)
+    |> validate_confirmation(:password, required: true)
     |> encrypt_password
   end
 
