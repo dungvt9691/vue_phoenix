@@ -1,0 +1,67 @@
+// Alignment
+
+.text-justify{
+  text-align: justify !important;
+}
+.text-wrap{
+  white-space: normal !important;
+}
+.text-nowrap{
+  white-space: nowrap !important;
+}
+.text-left{
+  text-align: left !important;
+}
+.text-right{
+  text-align: right !important;
+}
+.text-center{
+  text-align: center !important;
+}
+
+// Transformation
+.text-lowercase{
+  text-transform: lowercase !important;
+}
+.text-uppercase{
+  text-transform: uppercase !important;
+}
+.text-capitalize{
+  text-transform: capitalize !important;
+}
+
+// Misc
+.text-break{
+  word-break: break-word !important; // IE & < Edge 18
+  overflow-wrap: break-word !important;
+}
+
+// Reset
+.text-reset{
+  color: inherit !important;
+}
+
+// Color
+.text-primary{
+  color: $--color-primary !important;
+}
+
+.text-danger{
+  color: $--color-danger !important;
+}
+
+.text-warning{
+  color: $--color-warning !important;
+}
+
+.text-success{
+  color: $--color-success !important;
+}
+
+.text-black{
+  color: $--color-black !important;
+}
+
+.text-white{
+  color: $--color-white !important;
+}
