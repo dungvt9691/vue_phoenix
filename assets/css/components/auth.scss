@@ -1,5 +1,4 @@
 .auth-page{
-  background: #F0F0F0;
   position: fixed;
   top: 0;
   left: 0;
@@ -22,14 +21,17 @@
       padding-bottom: 10px;
     }
     .btn-facebook{
-      background: #3b5998;
-      border: #3b5998;
+      background: $--color-facebook;
+      border: $--color-facebook;
       &:hover, &:focus{
         opacity: 0.9
       }
     }
     .el-form-item__label{
       padding-bottom: 0;
+    }
+    .el-form-item__error:first-letter{
+      text-transform: capitalize;
     }
     a{
       color: $--color-primary;

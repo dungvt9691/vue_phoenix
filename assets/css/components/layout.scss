@@ -1,0 +1,29 @@
+.header{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: $--color-white;
+  box-shadow: inset 0px -1px 0px #ECECEC;
+  &__items{
+    display: flex;
+    justify-content: space-between;
+    &--item{
+      display: flex;
+      align-items: center;
+      height: 60px;
+      .brand{
+        height: 35px;
+      }
+      .profile{
+        display: flex;
+        align-items: center;
+        &__email{
+          cursor: pointer;
+          display: block;
+          user-select: none;
+        }
+      }
+    }
+  }
+}

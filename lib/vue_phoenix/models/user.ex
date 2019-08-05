@@ -32,11 +32,16 @@ defmodule VuePhoenix.User do
   end
 
   def sign_in(email, password) do
-    case Encryption.validate_password(Repo.get_by(User, email: email), password) do
-      {:ok, user} ->
-        token = Authenticator.generate_token(user)
-        Repo.insert(Ecto.build_assoc(user, :tokens, %{code: token}))
-      err -> err
+    case Repo.get_by(User, %{email: email}) do
+      nil -> {:error, %{email: "Your email address is not registered"}}
+      user ->
+        case Encryption.validate_password(user, password) do
+          {:ok, user} ->
+            token = Authenticator.generate_token(user)
+            Repo.insert(Ecto.build_assoc(user, :tokens, %{code: token}))
+          {:error, reason} ->
+            {:error, %{password: reason}}
+        end
     end
   end
 

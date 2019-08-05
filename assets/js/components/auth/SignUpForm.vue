@@ -6,10 +6,10 @@
     ref="signUpForm"
     label-width="200px"
   >
-    <el-form-item label="Email" prop="email">
+    <el-form-item :error="parseError('Email address', errors.email)" label="Email" prop="email">
       <el-input v-model="signUpForm.email"></el-input>
     </el-form-item>
-    <el-form-item label="Password" prop="password">
+    <el-form-item :error="parseError('Password', errors.password)" label="Password" prop="password">
       <el-input
         :type="isShowPassword ? 'text' : 'password'"
         v-model="signUpForm.password"
@@ -22,7 +22,11 @@
         ></i>
       </el-input>
     </el-form-item>
-    <el-form-item label="Password Confirmation" prop="passwordConfirmation">
+    <el-form-item
+      :error="parseError('Password confirmation', errors.password_confirmation)"
+      label="Password Confirmation"
+      prop="passwordConfirmation"
+    >
       <el-input
         :type="isShowPasswordConfirmation ? 'text' : 'password'"
         v-model="signUpForm.passwordConfirmation"
@@ -70,6 +74,10 @@
 </template>
 
 <script>
+import axios from 'axios';
+import userServices from '../../services/users';
+import { parseError } from '../../lib/common';
+
 export default {
   name: 'SignUpForm',
   data() {
@@ -112,16 +120,38 @@ export default {
           { validator: validatePass2, trigger: 'blur' },
         ],
       },
+      errors: {
+        email: [],
+        password: [],
+        password_confirmation: [],
+      },
     };
   },
   methods: {
+    parseError,
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log('submit!');
-          return false;
+          axios.post('/api/register', {
+            email: this.signUpForm.email,
+            password: this.signUpForm.password,
+            password_confirmation: this.signUpForm.passwordConfirmation,
+          })
+            .then((res) => {
+              userServices.storedToken(res.data.token);
+              this.$router.push({ name: 'HomeScreen' });
+            })
+            .catch((err) => {
+              const { response } = err;
+              switch (response.status) {
+                case 422:
+                  this.errors = response.data.errors;
+                  break;
+                default:
+                  break;
+              }
+            });
         }
-        console.log('error submit!!');
         return false;
       });
     },
