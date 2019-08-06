@@ -7,10 +7,11 @@
     label-width="120px"
   >
     <el-form-item :error="errors.email" label="Email" prop="email">
-      <el-input v-model="signInForm.email"></el-input>
+      <el-input :disabled="callingAPI" v-model="signInForm.email"></el-input>
     </el-form-item>
     <el-form-item :error="errors.password" label="Password" prop="password">
       <el-input
+        :disabled="callingAPI"
         :type="isShowPassword ? 'text' : 'password'"
         v-model="signInForm.password"
         autocomplete="off"
@@ -27,6 +28,7 @@
         class="mt-1"
         type="primary"
         @click="submitForm('signInForm')"
+        :loading="true"
       >
         Sign in
       </el-button>
@@ -64,6 +66,7 @@ export default {
   name: 'SignInForm',
   data() {
     return {
+      callingAPI: false,
       isShowPassword: false,
       signInForm: {
         email: '',
@@ -88,15 +91,18 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.callingAPI = true;
           axios.post('/api/auth', {
             email: this.signInForm.email,
             password: this.signInForm.password,
           })
             .then((res) => {
+              this.callingAPI = false;
               userServices.storedToken(res.data.token);
               this.$router.push({ name: 'HomeScreen' });
             })
             .catch((err) => {
+              this.callingAPI = false;
               const { response } = err;
               switch (response.status) {
                 case 401:

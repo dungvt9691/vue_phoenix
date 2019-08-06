@@ -57,6 +57,10 @@ module.exports = (env, options) => ({
       {
         test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
         loader: 'file-loader',
+        include: [
+          path.resolve('src'),
+          path.resolve('node_modules/element-ui/'),
+        ],
       },
     ],
   },

@@ -17,9 +17,10 @@ defmodule VuePhoenixWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", VuePhoenixWeb do
-    pipe_through :browser
-    get "/*path", PageController, :index
+  scope "/api", VuePhoenixWeb do
+    pipe_through :authenticate
+    delete "/auth", SessionsController, :delete
+    get "/profile", Users.ProfileController, :show
   end
 
   scope "/api", VuePhoenixWeb do
@@ -27,11 +28,10 @@ defmodule VuePhoenixWeb.Router do
     post "/register", RegistrationsController, :create
   end
 
-  scope "/api", VuePhoenixWeb do
-    pipe_through :authenticate
-    delete "/auth", SessionsController, :delete
+  scope "/", VuePhoenixWeb do
+    pipe_through :browser
+    get "/*path", PageController, :index
   end
-
 
   # Other scopes may use custom stacks.
   # scope "/api", VuePhoenixWeb do

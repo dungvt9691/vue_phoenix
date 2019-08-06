@@ -26,32 +26,43 @@ defmodule VuePhoenix.User do
     |> cast(attrs, [:email, :password])
     |> validate_required([:email, :password])
     |> unique_constraint(:email)
+    |> validate_format(:email, ~r/(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/)
     |> validate_length(:password, min: 6)
     |> validate_confirmation(:password, required: true)
     |> encrypt_password
   end
 
-  def sign_in(email, password) do
+  def sign_in(%{email: email, password: password}) do
     case Repo.get_by(User, %{email: email}) do
       nil -> {:error, %{email: "Your email address is not registered"}}
       user ->
         case Encryption.validate_password(user, password) do
           {:ok, user} ->
             token = Authenticator.generate_token(user)
-            Repo.insert(Ecto.build_assoc(user, :tokens, %{code: token}))
+            user
+            |> Ecto.build_assoc(:tokens, %{code: token})
+            |> Repo.insert
           {:error, reason} ->
             {:error, %{password: reason}}
         end
     end
   end
 
-  def sign_out(conn) do
-    case Authenticator.get_token(conn) do
-      {:ok, token} ->
-        case Repo.get_by(Token, %{code: token}) do
-          nil -> {:error, :not_found}
-          token -> Repo.delete(token)
-        end
+  def sign_out(token) do
+    case Repo.get_by(Token, %{code: token}) do
+      nil -> {:error, :not_found}
+      token -> Repo.delete(token)
+    end
+  end
+
+  def sign_up(params) do
+    changeset = User.changeset(%User{}, params)
+    case Repo.insert(changeset) do
+      {:ok, user} ->
+        code = Authenticator.generate_token(user)
+        user
+        |> Ecto.build_assoc(:tokens, %{code: code})
+        |> Repo.insert
       error -> error
     end
   end

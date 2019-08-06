@@ -15,8 +15,8 @@ defmodule VuePhoenix.Token do
 
   def changeset(%Token{} = token, attrs) do
     token
-    |> cast(attrs, [:code])
-    |> validate_required([:code])
+    |> cast(attrs, [:code, :user_id])
+    |> validate_required([:code, :user_id])
     |> unique_constraint(:code)
   end
 end
