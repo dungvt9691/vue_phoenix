@@ -1,0 +1,35 @@
+language: elixir
+
+sudo: false
+dist: trusty
+
+elixir:
+  - 1.9.1
+
+addons:
+  postgresql: '9.4'
+
+services:
+  - postgresql
+
+jobs:
+  include:
+    - state: test
+      name: Build
+      script:
+        - mix format --check-formatted
+        - mix credo --strict
+
+    - stage: test
+      name: Test
+      env: 
+        - MIX_ENV=test
+      before_script:
+        - cp config/travis.exs config/test.exs
+        - mix do ecto.create, ecto.migrate
+      script: mix test
+
+cache:
+  directories:
+    - _build
+    - deps
