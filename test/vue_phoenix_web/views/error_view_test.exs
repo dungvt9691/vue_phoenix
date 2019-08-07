@@ -2,13 +2,11 @@ defmodule VuePhoenixWeb.ErrorViewTest do
   use VuePhoenixWeb.ConnCase, async: true
 
   # Bring render/3 and render_to_string/3 for testing custom views
-  import Phoenix.View
+  alias VuePhoenixWeb.ErrorView
 
-  test "renders 404.html" do
-    assert render_to_string(VuePhoenixWeb.ErrorView, "404.html", []) == "Not Found"
-  end
-
-  test "renders 500.html" do
-    assert render_to_string(VuePhoenixWeb.ErrorView, "500.html", []) == "Internal Server Error"
+  test "error.json" do
+    reason = "This is the reason"
+    rendered_error = ErrorView.render("error.json", %{reason: reason})
+    assert rendered_error == %{errors: "This is the reason"}
   end
 end

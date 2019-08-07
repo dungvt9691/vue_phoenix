@@ -1,26 +1,35 @@
 defmodule VuePhoenix.Plugs.Authenticate do
+  @moduledoc false
+
   import Plug.Conn
 
-  alias VuePhoenix.{Repo, Token}
+  alias VuePhoenix.Authenticator.Token
+  alias VuePhoenix.Repo
+  alias VuePhoenix.Services.Token, as: TokenService
 
   def init(default), do: default
 
   def call(conn, _default) do
-    case VuePhoenix.Services.Authenticator.get_token(conn) do
-      {:ok, token} ->
-        case Repo.get_by(Token, %{code: token, revoked: false}) |> Repo.preload(:user) do
+    case TokenService.get(conn) do
+      {:ok, code} ->
+        token = Repo.get_by(Token, %{code: code, revoked: false})
+
+        case token |> Repo.preload(:user) do
           nil -> unauthorized(conn)
-          token -> authorized(conn, token.user)
+          token -> authorized(conn, token.user, token)
         end
-      _ -> unauthorized(conn)
+
+      _ ->
+        unauthorized(conn)
     end
   end
 
-  defp authorized(conn, user) do
+  defp authorized(conn, user, token) do
     # If you want, add new values to `conn`
     conn
     |> assign(:signed_in, true)
     |> assign(:signed_user, user)
+    |> assign(:current_token, token.code)
   end
 
   defp unauthorized(conn) do

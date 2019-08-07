@@ -1,8 +1,10 @@
-defmodule VuePhoenix.Token do
+defmodule VuePhoenix.Authenticator.Token do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias VuePhoenix.{Token, User}
+  alias VuePhoenix.Authenticator.{Token, User}
 
   schema "tokens" do
     belongs_to :user, User
@@ -15,8 +17,8 @@ defmodule VuePhoenix.Token do
 
   def changeset(%Token{} = token, attrs) do
     token
-    |> cast(attrs, [:code])
-    |> validate_required([:code])
+    |> cast(attrs, [:code, :user_id])
+    |> validate_required([:code, :user_id])
     |> unique_constraint(:code)
   end
 end

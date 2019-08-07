@@ -1,8 +1,13 @@
-defmodule VuePhoenix.User do
+defmodule VuePhoenix.Authenticator.User do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
-  alias VuePhoenix.{Repo, User, Token}
-  alias VuePhoenix.Services.{Encryption, Authenticator}
+
+  alias VuePhoenix.Authenticator.Token
+  alias VuePhoenix.Services.Encryption
+
+  @email_regex ~r/(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/
 
   schema "users" do
     has_many :tokens, Token
@@ -26,33 +31,15 @@ defmodule VuePhoenix.User do
     |> cast(attrs, [:email, :password])
     |> validate_required([:email, :password])
     |> unique_constraint(:email)
+    |> validate_format(:email, @email_regex)
     |> validate_length(:password, min: 6)
     |> validate_confirmation(:password, required: true)
     |> encrypt_password
   end
 
-  def sign_in(email, password) do
-    case Encryption.validate_password(Repo.get_by(User, email: email), password) do
-      {:ok, user} ->
-        token = Authenticator.generate_token(user)
-        Repo.insert(Ecto.build_assoc(user, :tokens, %{code: token}))
-      err -> err
-    end
-  end
-
-  def sign_out(conn) do
-    case Authenticator.get_token(conn) do
-      {:ok, token} ->
-        case Repo.get_by(Token, %{code: token}) do
-          nil -> {:error, :not_found}
-          token -> Repo.delete(token)
-        end
-      error -> error
-    end
-  end
-
   defp encrypt_password(changeset) do
     password = get_change(changeset, :password)
+
     if password do
       encrypted_password = Encryption.hash_password(password)
       put_change(changeset, :encrypted_password, encrypted_password)

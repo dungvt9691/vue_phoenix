@@ -1,14 +1,16 @@
-import jwtDecode from 'jwt-decode';
+import Vue from 'vue';
+
+function storedToken(token) {
+  Vue.cookie.set('token', token, { expires: '1D' });
+}
+
+function accessToken() {
+  return Vue.cookie.get('token');
+}
 
 function isSignedIn() {
-  const user = JSON.parse(localStorage.getItem('user'));
-  if (user && user.jwt) {
-    const content = jwtDecode(user.jwt);
-    const now = Math.floor(Date.now() / 1000);
-    if (content.exp < now) {
-      localStorage.removeItem('user');
-      window.location.href = '/sign-in';
-    }
+  const token = Vue.cookie.get('token');
+  if (token) {
     return true;
   }
   return false;
@@ -23,10 +25,13 @@ function updateUserData(data) {
 }
 
 function signOut() {
+  Vue.cookie.delete('token');
   localStorage.removeItem('user');
 }
 
 export default {
+  storedToken,
+  accessToken,
   isSignedIn,
   userData,
   updateUserData,

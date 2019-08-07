@@ -45,7 +45,10 @@ defmodule VuePhoenix.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:comeonin, "~> 4.0"},
-      {:bcrypt_elixir, "~> 1.0"}
+      {:bcrypt_elixir, "~> 1.0"},
+      {:ex_machina, "~> 2.3"},
+      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
+      {:faker, "~> 0.12", only: :test}
     ]
   end
 

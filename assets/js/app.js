@@ -17,13 +17,14 @@ import 'phoenix_html';
 
 import Vue from 'vue';
 import ElementUI from 'element-ui';
-// eslint-disable-next-line no-unused-vars
+import VueCookie from 'vue-cookie';
 import '../css/app.scss';
 import App from './App.vue';
 import router from './router';
 import store from './store/index';
 
 Vue.use(ElementUI);
+Vue.use(VueCookie);
 
 new Vue({
   router,

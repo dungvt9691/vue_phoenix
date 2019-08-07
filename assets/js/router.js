@@ -59,7 +59,7 @@ router.beforeEach((to, _from, next) => {
     } else if (!isSignedIn) {
       next();
     } else {
-      next();
+      router.push({ name: 'HomeScreen' });
     }
   } else {
     next();

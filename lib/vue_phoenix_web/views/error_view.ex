@@ -13,4 +13,10 @@ defmodule VuePhoenixWeb.ErrorView do
   def template_not_found(template, _assigns) do
     Phoenix.Controller.status_message_from_template(template)
   end
+
+  def render("error.json", %{reason: reason}) do
+    # When encoded, the changeset returns its errors
+    # as a JSON object. So we just pass it forward.
+    %{errors: reason}
+  end
 end
