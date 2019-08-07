@@ -1,13 +1,14 @@
 defmodule VuePhoenixWeb.RegistrationsController do
   use VuePhoenixWeb, :controller
-  alias VuePhoenix.User
+  alias VuePhoenix.Authenticator
 
   def create(conn, _params) do
-    case User.sign_up(conn.params) do
+    case Authenticator.sign_up(conn.params) do
       {:ok, token} ->
         conn
         |> put_status(:ok)
         |> render("show.json", token: token)
+
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

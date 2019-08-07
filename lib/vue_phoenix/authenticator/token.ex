@@ -1,8 +1,10 @@
-defmodule VuePhoenix.Token do
+defmodule VuePhoenix.Authenticator.Token do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias VuePhoenix.{Token, User}
+  alias VuePhoenix.Authenticator.{Token, User}
 
   schema "tokens" do
     belongs_to :user, User

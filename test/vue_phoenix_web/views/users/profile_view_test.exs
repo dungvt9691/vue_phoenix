@@ -8,12 +8,12 @@ defmodule VuePhoenixWeb.Users.ProfileViewTest do
   test "show.json" do
     user = insert(:user)
     rendered_profile = ProfileView.render("show.json", profile: user)
-    assert rendered_profile == %{email: "dungvt9691@gmail.com"}
+    assert rendered_profile == %{email: user.email}
   end
 
   test "profile.json" do
     user = insert(:user)
     rendered_profile = ProfileView.render("profile.json", profile: user)
-    assert rendered_profile == %{email: "dungvt9691@gmail.com"}
+    assert rendered_profile == %{email: user.email}
   end
 end

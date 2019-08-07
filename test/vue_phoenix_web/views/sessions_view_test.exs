@@ -9,6 +9,6 @@ defmodule VuePhoenixWeb.SessionsViewTest do
     user = insert(:user)
     token = insert(:token, user: user)
     rendered_token = SessionsView.render("show.json", %{token: token})
-    assert rendered_token == %{token: "code"}
+    assert rendered_token == %{token: token.code}
   end
 end

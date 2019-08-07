@@ -1,6 +1,8 @@
 defmodule VuePhoenix.Services.Encryption do
+  @moduledoc false
+
   alias Comeonin.Bcrypt
-  alias VuePhoenix.User
+  alias VuePhoenix.Authenticator.User
 
   def hash_password(password), do: Bcrypt.hashpwsalt(password)
 

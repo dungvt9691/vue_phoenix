@@ -14,6 +14,7 @@ defmodule VuePhoenixWeb.ChannelCase do
   """
 
   use ExUnit.CaseTemplate
+  alias Ecto.Adapters.SQL.Sandbox
 
   using do
     quote do
@@ -26,10 +27,10 @@ defmodule VuePhoenixWeb.ChannelCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(VuePhoenix.Repo)
+    :ok = Sandbox.checkout(VuePhoenix.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(VuePhoenix.Repo, {:shared, self()})
+      Sandbox.mode(VuePhoenix.Repo, {:shared, self()})
     end
 
     :ok
