@@ -2,11 +2,10 @@ use Mix.Config
 
 # Configure your database
 config :vue_phoenix, VuePhoenix.Repo,
-  username: "dungvt",
+  username: "postgres",
   password: "",
   database: "vue_phoenix_test",
   hostname: "localhost",
-  port: 5431,
   pool: Ecto.Adapters.SQL.Sandbox
 
 # We don't run a server during test. If one is required,
