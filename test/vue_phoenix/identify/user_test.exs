@@ -1,7 +1,7 @@
-defmodule VuePhoenix.Authenticator.UserTest do
+defmodule VuePhoenix.Identify.UserTest do
   use VuePhoenix.DataCase
 
-  alias VuePhoenix.Authenticator.User
+  alias VuePhoenix.Identify.User
 
   describe "changeset" do
     setup do
@@ -42,7 +42,7 @@ defmodule VuePhoenix.Authenticator.UserTest do
 
     test "changeset with password not match", %{valid_attrs: valid_attrs} do
       changeset = User.changeset(%User{}, %{valid_attrs | password_confirmation: "password1"})
-      assert %{password_confirmation: ["does not match confirmation"]} = errors_on(changeset)
+      assert %{password_confirmation: ["does not match with password"]} = errors_on(changeset)
     end
   end
 end

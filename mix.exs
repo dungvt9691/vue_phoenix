@@ -48,7 +48,9 @@ defmodule VuePhoenix.MixProject do
       {:bcrypt_elixir, "~> 1.0"},
       {:ex_machina, "~> 2.3"},
       {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
-      {:faker, "~> 0.12", only: :test}
+      {:faker, "~> 0.12", only: :test},
+      {:arc_ecto, "~> 0.11.1"},
+      {:arc, "0.11.0"}
     ]
   end
 

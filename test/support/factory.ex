@@ -3,7 +3,7 @@ defmodule VuePhoenix.Factory do
 
   use ExMachina.Ecto, repo: VuePhoenix.Repo
 
-  alias VuePhoenix.Authenticator.{Token, User}
+  alias VuePhoenix.Identify.{Token, User}
 
   def user_factory do
     %User{

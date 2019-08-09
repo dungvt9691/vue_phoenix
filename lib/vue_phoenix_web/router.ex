@@ -21,6 +21,7 @@ defmodule VuePhoenixWeb.Router do
     pipe_through :authenticate
     delete "/auth", SessionsController, :delete
     get "/profile", Users.ProfileController, :show
+    put "/profile", Users.ProfileController, :update
   end
 
   scope "/api", VuePhoenixWeb do

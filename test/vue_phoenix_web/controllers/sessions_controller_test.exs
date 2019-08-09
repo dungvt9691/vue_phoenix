@@ -1,8 +1,8 @@
 defmodule VuePhoenixWeb.SessionsControllerTest do
   use VuePhoenixWeb.ConnCase
 
-  alias VuePhoenix.{Authenticator, Repo}
-  alias VuePhoenix.Authenticator.User
+  alias VuePhoenix.{Identify, Repo}
+  alias VuePhoenix.Identify.User
 
   @user_attrs %{
     email: "dungvt9691@gmail.com",
@@ -17,15 +17,15 @@ defmodule VuePhoenixWeb.SessionsControllerTest do
   end
 
   def fixture(:sign_up) do
-    {:ok, token} = Authenticator.sign_up(@user_attrs)
+    {:ok, token} = Identify.sign_up(@user_attrs)
     token
   end
 
   describe "create" do
     setup do
-      sign_in_params = [email: "dungvt9691@gmail.com", password: "password"]
-      existed_email_params = [email: "not-registered@gmail.com", password: "password"]
-      invalid_password_params = [email: "dungvt9691@gmail.com", password: "invalid"]
+      sign_in_params = %{email: "dungvt9691@gmail.com", password: "password"}
+      existed_email_params = %{email: "not-registered@gmail.com", password: "password"}
+      invalid_password_params = %{email: "dungvt9691@gmail.com", password: "invalid"}
 
       [
         sign_in_params: sign_in_params,

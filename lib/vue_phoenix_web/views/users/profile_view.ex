@@ -7,7 +7,11 @@ defmodule VuePhoenixWeb.Users.ProfileView do
 
   def render("profile.json", %{profile: profile}) do
     %{
-      email: profile.email
+      email: profile.email,
+      first_name: profile.first_name,
+      last_name: profile.last_name,
+      birthday: profile.birthday,
+      avatar: VuePhoenix.Image.urls({profile.avatar, profile})
     }
   end
 end

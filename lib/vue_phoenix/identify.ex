@@ -1,9 +1,9 @@
-defmodule VuePhoenix.Authenticator do
+defmodule VuePhoenix.Identify do
   @moduledoc """
-    The Authenticator context.
+    The Identify context.
   """
   alias VuePhoenix.Repo
-  alias VuePhoenix.Authenticator.{Token, User}
+  alias VuePhoenix.Identify.{Token, User}
   alias VuePhoenix.Services.Encryption
   alias VuePhoenix.Services.Token, as: TokenService
 
@@ -48,5 +48,11 @@ defmodule VuePhoenix.Authenticator do
       error ->
         error
     end
+  end
+
+  def update(user, params) do
+    user
+    |> User.changeset_for_update(params)
+    |> Repo.update()
   end
 end

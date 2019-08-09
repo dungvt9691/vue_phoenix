@@ -1,9 +1,9 @@
 defmodule VuePhoenixWeb.SessionsController do
   use VuePhoenixWeb, :controller
-  alias VuePhoenix.Authenticator
+  alias VuePhoenix.Identify
 
   def create(conn, %{"email" => email, "password" => password}) do
-    case Authenticator.sign_in(%{email: email, password: password}) do
+    case Identify.sign_in(%{email: email, password: password}) do
       {:ok, token} ->
         conn
         |> put_status(:ok)
@@ -19,7 +19,7 @@ defmodule VuePhoenixWeb.SessionsController do
 
   @spec delete(Plug.Conn.t(), any) :: Plug.Conn.t()
   def delete(conn, _) do
-    case Authenticator.sign_out(conn.assigns[:current_token]) do
+    case Identify.sign_out(conn.assigns[:current_token]) do
       {:error, reason} ->
         conn |> send_resp(400, reason)
 
