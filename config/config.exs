@@ -25,6 +25,18 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :phoenix, :format_encoders, "json-api": Poison
+
+config :plug, :mimes, %{
+  "application/vnd.api+json" => ["json-api"]
+}
+
+config :ja_serializer,
+  key_format: :underscored
+
+config :phoenix, VuePhoenix.Endpoint,
+  render_errors: [view: VuePhoenix.ErrorView, accepts: ~w(html json json-api)]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

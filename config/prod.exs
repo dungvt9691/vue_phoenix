@@ -10,7 +10,7 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :vue_phoenix, VuePhoenixWeb.Endpoint,
-  url: [scheme: "https", host: "kvy-vue-phoenix.herokuapp.com", port: 443],
+  url: [scheme: "https", host: System.get_env("HEROKU_HOST"), port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
@@ -50,6 +50,16 @@ config :logger, level: :info
 #       force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
+
+# Config arc
+config :arc,
+  bucket: {:system, "S3_BUCKET"},
+  virtual_host: true
+
+config :ex_aws,
+  access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, :instance_role],
+  secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role],
+  region: "ap-southeast-1"
 
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.

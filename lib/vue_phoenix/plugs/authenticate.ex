@@ -3,7 +3,7 @@ defmodule VuePhoenix.Plugs.Authenticate do
 
   import Plug.Conn
 
-  alias VuePhoenix.Authenticator.Token
+  alias VuePhoenix.Identify.Token
   alias VuePhoenix.Repo
   alias VuePhoenix.Services.Token, as: TokenService
 

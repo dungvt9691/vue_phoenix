@@ -28,7 +28,7 @@
         class="mt-1"
         type="primary"
         @click="submitForm('signInForm')"
-        :loading="true"
+        :loading="callingAPI"
       >
         Sign in
       </el-button>
@@ -37,6 +37,7 @@
         class="btn-facebook mt-1"
         type="primary"
         @click="submitForm('signInForm')"
+        :loading="callingAPI"
       >
         <i class="fab fa-facebook-f mr-1"></i>
         Sign in with Facebook
@@ -89,6 +90,7 @@ export default {
   },
   methods: {
     submitForm(formName) {
+      this.errors = {};
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.callingAPI = true;
@@ -98,7 +100,7 @@ export default {
           })
             .then((res) => {
               this.callingAPI = false;
-              userServices.storedToken(res.data.token);
+              userServices.storedToken(res.data.data.attributes.code);
               this.$router.push({ name: 'HomeScreen' });
             })
             .catch((err) => {
@@ -109,11 +111,14 @@ export default {
                   this.errors = response.data.errors;
                   break;
                 default:
+                  this.$notify.error({
+                    title: 'Error',
+                    message: 'Something went wrong',
+                  });
                   break;
               }
             });
         }
-        return false;
       });
     },
   },

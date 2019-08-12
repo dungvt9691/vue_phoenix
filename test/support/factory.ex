@@ -3,7 +3,8 @@ defmodule VuePhoenix.Factory do
 
   use ExMachina.Ecto, repo: VuePhoenix.Repo
 
-  alias VuePhoenix.Authenticator.{Token, User}
+  alias VuePhoenix.Identify.{Token, User}
+  alias VuePhoenix.Social.{Image, Post}
 
   def user_factory do
     %User{
@@ -16,5 +17,15 @@ defmodule VuePhoenix.Factory do
     %Token{
       code: Faker.String.base64(100)
     }
+  end
+
+  def post_factory do
+    %Post{
+      content: Faker.String.base64(100)
+    }
+  end
+
+  def image_factory do
+    %Image{}
   end
 end
