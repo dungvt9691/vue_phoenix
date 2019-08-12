@@ -1,9 +1,9 @@
 // Common Javascript Functions
 // eslint-disable-next-line import/prefer-default-export
-export function parseError(key, errors) {
-  try {
-    return errors.map(error => `${key} ${error}`).join('<br>');
-  } catch (_error) {
-    return '';
-  }
+export function parseError(errors) {
+  const data = {};
+  Object.keys(errors).forEach((key) => {
+    data[key] = `${key.split('_').join(' ')} ${errors[key].join('<br>')}`;
+  });
+  return data;
 }

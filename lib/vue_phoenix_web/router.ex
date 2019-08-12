@@ -14,13 +14,18 @@ defmodule VuePhoenixWeb.Router do
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug :accepts, ["json-api"]
+    plug JaSerializer.ContentTypeNegotiation
+    plug JaSerializer.Deserializer
   end
 
   scope "/api", VuePhoenixWeb do
     pipe_through :authenticate
     delete "/auth", SessionsController, :delete
     get "/profile", Users.ProfileController, :show
+    put "/profile", Users.ProfileController, :update
+    resources "/posts", PostController, except: [:new, :edit]
+    resources "/images", ImageController, except: [:new, :edit, :update]
   end
 
   scope "/api", VuePhoenixWeb do

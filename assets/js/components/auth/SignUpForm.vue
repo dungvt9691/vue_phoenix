@@ -6,11 +6,12 @@
     ref="signUpForm"
     label-width="200px"
   >
-    <el-form-item :error="parseError('Email address', errors.email)" label="Email" prop="email">
-      <el-input v-model="signUpForm.email"></el-input>
+    <el-form-item :error="errors.email" label="Email" prop="email">
+      <el-input :disabled="callingAPI" v-model="signUpForm.email"></el-input>
     </el-form-item>
-    <el-form-item :error="parseError('Password', errors.password)" label="Password" prop="password">
+    <el-form-item :error="errors.password" label="Password" prop="password">
       <el-input
+        :disabled="callingAPI"
         :type="isShowPassword ? 'text' : 'password'"
         v-model="signUpForm.password"
         autocomplete="off"
@@ -23,11 +24,12 @@
       </el-input>
     </el-form-item>
     <el-form-item
-      :error="parseError('Password confirmation', errors.password_confirmation)"
+      :error="errors.password_confirmation"
       label="Password Confirmation"
       prop="passwordConfirmation"
     >
       <el-input
+        :disabled="callingAPI"
         :type="isShowPasswordConfirmation ? 'text' : 'password'"
         v-model="signUpForm.passwordConfirmation"
         autocomplete="off"
@@ -44,6 +46,7 @@
         class="mt-1"
         type="primary"
         @click="submitForm('signUpForm')"
+        :loading="callingAPI"
       >
         Sign up
       </el-button>
@@ -52,6 +55,7 @@
         class="btn-facebook mt-1"
         type="primary"
         @click="submitForm('signUpForm')"
+        :loading="callingAPI"
       >
         <i class="fab fa-facebook-f mr-1"></i>
         Sign up with Facebook
@@ -101,6 +105,7 @@ export default {
       }
     };
     return {
+      callingAPI: false,
       isShowPassword: false,
       isShowPasswordConfirmation: false,
       signUpForm: {
@@ -121,38 +126,44 @@ export default {
         ],
       },
       errors: {
-        email: [],
-        password: [],
-        password_confirmation: [],
+        email: '',
+        password: '',
+        password_confirmation: '',
       },
     };
   },
   methods: {
-    parseError,
     submitForm(formName) {
+      this.errors = {};
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.callingAPI = true;
           axios.post('/api/register', {
             email: this.signUpForm.email,
             password: this.signUpForm.password,
             password_confirmation: this.signUpForm.passwordConfirmation,
           })
             .then((res) => {
-              userServices.storedToken(res.data.token);
+              this.callingAPI = false;
+              userServices.storedToken(res.data.data.attributes.code);
               this.$router.push({ name: 'HomeScreen' });
             })
             .catch((err) => {
+              this.callingAPI = false;
               const { response } = err;
               switch (response.status) {
                 case 422:
-                  this.errors = response.data.errors;
+                  this.errors = parseError(response.data.errors);
                   break;
                 default:
+                  this.$notify.error({
+                    title: 'Error',
+                    message: 'Something went wrong',
+                  });
                   break;
               }
             });
         }
-        return false;
       });
     },
   },

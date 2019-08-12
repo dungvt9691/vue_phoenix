@@ -1,9 +1,10 @@
-defmodule VuePhoenix.Authenticator.TokenTest do
+defmodule VuePhoenix.Identify.TokenTest do
+  @moduledoc false
   use VuePhoenix.DataCase
 
   import VuePhoenix.Factory
 
-  alias VuePhoenix.Authenticator.Token
+  alias VuePhoenix.Identify.Token
   alias VuePhoenix.Repo
 
   describe "changeset" do
