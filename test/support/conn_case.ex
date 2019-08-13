@@ -30,6 +30,10 @@ defmodule VuePhoenixWeb.ConnCase do
   setup tags do
     :ok = Sandbox.checkout(VuePhoenix.Repo)
 
+    on_exit(fn ->
+      VuePhoenix.FileCase.remove_test_files()
+    end)
+
     unless tags[:async] do
       Sandbox.mode(VuePhoenix.Repo, {:shared, self()})
     end

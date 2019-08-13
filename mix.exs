@@ -11,7 +11,14 @@ defmodule VuePhoenix.MixProject do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
@@ -21,6 +28,7 @@ defmodule VuePhoenix.MixProject do
   def application do
     [
       mod: {VuePhoenix.Application, []},
+      application: [:scrivener_ecto],
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -48,7 +56,18 @@ defmodule VuePhoenix.MixProject do
       {:bcrypt_elixir, "~> 1.0"},
       {:ex_machina, "~> 2.3"},
       {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
-      {:faker, "~> 0.12", only: :test}
+      {:faker, "~> 0.12", only: :test},
+      {:arc_ecto, "~> 0.11.1"},
+      {:arc, "0.11.0"},
+      {:scrivener_ecto, "~> 2.2.0"},
+      {:scrivener_headers, "~> 3.1.0"},
+      {:ja_serializer, "~> 0.15.0"},
+      {:poison, "~> 3.1"},
+      {:ex_aws, "~> 2.1"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:hackney, "~> 1.9"},
+      {:sweet_xml, "~> 0.6"},
+      {:excoveralls, "~> 0.10", only: :test}
     ]
   end
 
