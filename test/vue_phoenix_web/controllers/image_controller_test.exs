@@ -39,6 +39,7 @@ defmodule VuePhoenixWeb.ImageControllerTest do
         |> get(Routes.image_path(conn, :index))
 
       assert json_response(conn, 200)["data"]
+      assert length(json_response(conn, 200)["data"]) == 10
     end
 
     test "lists entries by page and limit", %{
@@ -182,7 +183,7 @@ defmodule VuePhoenixWeb.ImageControllerTest do
     test "not found", %{conn: conn} do
       conn =
         conn
-        |> delete(Routes.image_path(conn, :show, "aaa-bbb"))
+        |> delete(Routes.image_path(conn, :delete, "aaa-bbb"))
 
       assert conn.status == 404
     end

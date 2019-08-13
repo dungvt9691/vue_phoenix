@@ -24,7 +24,11 @@ defmodule VuePhoenixWeb.Router do
     delete "/auth", SessionsController, :delete
     get "/profile", Users.ProfileController, :show
     put "/profile", Users.ProfileController, :update
-    resources "/posts", PostController, except: [:new, :edit]
+
+    resources "/posts", PostController, except: [:new, :edit] do
+      resources "/comments", CommentController, only: [:index, :create, :update, :delete]
+    end
+
     resources "/images", ImageController, except: [:new, :edit, :update]
   end
 

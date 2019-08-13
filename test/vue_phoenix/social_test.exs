@@ -4,7 +4,7 @@ defmodule VuePhoenix.SocialTest do
 
   import VuePhoenix.Factory
   alias VuePhoenix.{Repo, Social}
-  alias VuePhoenix.Social.{Image, Post}
+  alias VuePhoenix.Social.{Comment, Image, Post}
 
   describe "list_posts" do
     setup do
@@ -251,6 +251,125 @@ defmodule VuePhoenix.SocialTest do
 
     test "successfully", %{image: image} do
       assert {:ok, _} = Social.delete_image(image)
+    end
+  end
+
+  describe "list_comments" do
+    setup do
+      user = insert(:user)
+      post = insert(:post, user: user)
+      insert_list(10, :comment, post: post, user: user)
+
+      comments =
+        Comment
+        |> preload([:user])
+        |> order_by(desc: :id)
+        |> Repo.all()
+
+      pagination_params = %{"page" => 1, "limit" => 2}
+      [post: post, comments: comments, pagination_params: pagination_params]
+    end
+
+    test "all", %{post: post, comments: comments} do
+      assert comments == Social.list_comments(post).entries
+    end
+
+    test "with page and limit params", %{
+      post: post,
+      comments: comments,
+      pagination_params: pagination_params
+    } do
+      pagination = %{
+        page_number: 1,
+        page_size: 2,
+        total_entries: 10,
+        total_pages: 5
+      }
+
+      assert pagination.page_number == Social.list_comments(post, pagination_params).page_number
+      assert pagination.page_size == Social.list_comments(post, pagination_params).page_size
+
+      assert pagination.total_entries ==
+               Social.list_comments(post, pagination_params).total_entries
+
+      assert pagination.total_pages == Social.list_comments(post, pagination_params).total_pages
+      assert Enum.take(comments, 2) == Social.list_comments(post, pagination_params).entries
+    end
+  end
+
+  describe "get_comment_by_user!" do
+    setup do
+      user = insert(:user)
+      post = insert(:post, user: user)
+      comment = insert(:comment, user: user, post: post)
+
+      comment =
+        Comment
+        |> preload([:user])
+        |> Repo.get(comment.id)
+
+      [comment: comment, user: user]
+    end
+
+    test "existed", %{comment: comment, user: user} do
+      assert comment == Social.get_comment_by_user!(user, comment.external_id)
+    end
+
+    test "not existed", %{user: user} do
+      assert nil == Social.get_comment_by_user!(user, "aaa-bbb")
+    end
+  end
+
+  describe "create_comment" do
+    setup do
+      user = insert(:user)
+      post = insert(:post, user: user)
+
+      valid_attrs = %{
+        "content" => "Content"
+      }
+
+      invalid_attrs = %{
+        "content" => ""
+      }
+
+      [user: user, post: post, valid_attrs: valid_attrs, invalid_attrs: invalid_attrs]
+    end
+
+    test "valid attrs", %{user: user, post: post, valid_attrs: valid_attrs} do
+      assert {:ok, _} = Social.create_comment(user, post, valid_attrs)
+    end
+
+    test "invalid attrs", %{user: user, post: post, invalid_attrs: invalid_attrs} do
+      assert {:error, _} = Social.create_comment(user, post, invalid_attrs)
+    end
+  end
+
+  describe "update_comment" do
+    setup do
+      comment = insert(:comment)
+      valid_attrs = %{"content" => "Updated"}
+      invalid_attrs = %{"content" => ""}
+      [comment: comment, valid_attrs: valid_attrs, invalid_attrs: invalid_attrs]
+    end
+
+    test "valid attrs", %{comment: comment, valid_attrs: valid_attrs} do
+      assert {:ok, _} = Social.update_comment(comment, valid_attrs)
+    end
+
+    test "invalid attrs", %{comment: comment, invalid_attrs: invalid_attrs} do
+      assert {:error, _} = Social.update_comment(comment, invalid_attrs)
+    end
+  end
+
+  describe "delete_comment" do
+    setup do
+      comment = insert(:comment)
+      [comment: comment]
+    end
+
+    test "successfully", %{comment: comment} do
+      assert {:ok, _} = Social.delete_comment(comment)
     end
   end
 end
