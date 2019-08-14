@@ -2,9 +2,11 @@ defmodule VuePhoenix.Identify do
   @moduledoc """
     The Identify context.
   """
-  alias VuePhoenix.Repo
+  import Ecto.Query
+
+  alias VuePhoenix.{Mailer, Repo}
   alias VuePhoenix.Identify.{Token, User}
-  alias VuePhoenix.Services.Encryption
+  alias VuePhoenix.Services.{Encryption, SendMail}
   alias VuePhoenix.Services.Token, as: TokenService
 
   def sign_in(%{email: email, password: password}) do
@@ -49,6 +51,46 @@ defmodule VuePhoenix.Identify do
 
       error ->
         error
+    end
+  end
+
+  def forgot_password(email) do
+    case Repo.get_by(User, %{email: email}) do
+      nil ->
+        {:error, %{email: "Your email address is not registered"}}
+
+      user ->
+        user
+        |> User.changeset_for_reset_password()
+        |> Repo.update()
+
+        user
+        |> SendMail.reset_password_instructions()
+        |> Mailer.deliver_later()
+
+        {:ok, user}
+    end
+  end
+
+  def reset_password(params) do
+    current_date =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.truncate(:second)
+
+    query =
+      from u in User,
+        where:
+          u.reset_password_token == ^params["reset_password_token"] and
+            u.reset_password_expire_at > ^current_date
+
+    case Repo.one(query) do
+      nil ->
+        {:not_found, "Your reset password token is expired or invalid"}
+
+      user ->
+        user
+        |> User.changeset_for_update_password(params)
+        |> Repo.update()
     end
   end
 

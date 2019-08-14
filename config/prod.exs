@@ -61,6 +61,18 @@ config :ex_aws,
   secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role],
   region: "ap-southeast-1"
 
+# Config email for prod
+config :vue_phoenix, VuePhoenix.Mailer,
+  adapter: Bamboo.SMTPAdapter,
+  server: {:system, "SMTP_SERVER"},
+  port: {:system, "SMTP_PORT"},
+  username: {:system, "SMTP_USERNAME"},
+  password: {:system, "SMTP_PASSWORD"},
+  tls: :if_available,
+  ssl: false,
+  retries: 1,
+  auth: :if_available
+
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
 import_config "prod.secret.exs"

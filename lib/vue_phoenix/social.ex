@@ -5,6 +5,7 @@ defmodule VuePhoenix.Social do
   import Ecto.Query, warn: false
 
   alias VuePhoenix.Repo
+  alias VuePhoenix.Social
   alias VuePhoenix.Social.{Image, Post, PostImage}
 
   def list_posts(params \\ %{}) do
@@ -45,7 +46,7 @@ defmodule VuePhoenix.Social do
 
   defp add_post_images({:ok, post}, attrs) do
     Enum.each(attrs["image_ids"] || [], fn image_id ->
-      case Repo.get_by(Image, %{external_id: image_id}) do
+      case Social.get_image!(image_id) do
         nil ->
           post
 
@@ -54,15 +55,11 @@ defmodule VuePhoenix.Social do
           |> Ecto.build_assoc(:post_images)
           |> PostImage.changeset(%{image_id: image.id})
           |> Repo.insert()
-          |> do_add_post_images
       end
     end)
 
     post
   end
-
-  defp do_add_post_images({:ok, post_image}), do: post_image
-  defp do_add_post_images({:error, changeset}), do: Repo.rollback(changeset)
 
   def update_post(%Post{} = post, attrs) do
     post
@@ -74,8 +71,6 @@ defmodule VuePhoenix.Social do
   def delete_post(%Post{} = post) do
     Repo.delete(post)
   end
-
-  alias VuePhoenix.Social.Image
 
   def list_images(current_user, params \\ %{}) do
     Image
@@ -113,9 +108,6 @@ defmodule VuePhoenix.Social do
         |> Repo.preload([:user])
         |> Image.changeset_for_update(attrs)
         |> Repo.update()
-
-      error ->
-        error
     end
   end
 

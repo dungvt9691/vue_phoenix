@@ -22,4 +22,9 @@ defmodule VuePhoenix.Identify.Token do
     |> validate_required([:code, :user_id])
     |> unique_constraint(:code)
   end
+
+  def changeset_for_update(%Token{} = token, attrs) do
+    token
+    |> cast(attrs, [:code, :revoked, :revoked_at])
+  end
 end

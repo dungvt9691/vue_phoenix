@@ -6,10 +6,13 @@ defmodule VuePhoenix.Identify.User do
   import Ecto.Changeset
 
   alias VuePhoenix.Identify.Token
-  alias VuePhoenix.Services.Encryption
   alias VuePhoenix.Social.{Comment, Image, Post}
+  alias VuePhoenix.Services.{Encryption, RandomString}
 
   @email_regex ~r/(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/
+  @random_string_length 40
+  # Seconds
+  @expired_in 86_400
 
   schema "users" do
     has_many :tokens, Token
@@ -26,7 +29,7 @@ defmodule VuePhoenix.Identify.User do
     field :birthday, :naive_datetime
     field :encrypted_password, :string
     field :reset_password_token, :string
-    field :reset_password_sent_at, :naive_datetime
+    field :reset_password_expire_at, :naive_datetime
 
     # VIRTUAL FIELDS
     field :password, :string, virtual: true
@@ -61,6 +64,31 @@ defmodule VuePhoenix.Identify.User do
     |> validate_length(:password, min: 6)
     |> validate_password_confirmation
     |> encrypt_password
+  end
+
+  def changeset_for_reset_password(user, attrs \\ %{}) do
+    reset_password_token = RandomString.generate(@random_string_length)
+
+    reset_password_expire_at =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.add(@expired_in)
+      |> NaiveDateTime.truncate(:second)
+
+    user
+    |> cast(attrs, [])
+    |> put_change(:reset_password_expire_at, reset_password_expire_at)
+    |> put_change(:reset_password_token, reset_password_token)
+  end
+
+  def changeset_for_update_password(user, attrs \\ %{}) do
+    user
+    |> cast(attrs, [:password, :password_confirmation])
+    |> validate_required([:password])
+    |> validate_length(:password, min: 6)
+    |> validate_password_confirmation
+    |> encrypt_password
+    |> put_change(:reset_password_expire_at, nil)
+    |> put_change(:reset_password_token, nil)
   end
 
   defp encrypt_password(changeset) do

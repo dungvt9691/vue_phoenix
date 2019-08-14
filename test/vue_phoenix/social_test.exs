@@ -105,6 +105,16 @@ defmodule VuePhoenix.SocialTest do
       {:ok, post} = Social.create_post(user, %{valid_attrs | "image_ids" => image_ids})
       assert image_ids == Enum.map(post.images, fn image -> image.external_id end)
     end
+
+    test "there is a image not existed", %{user: user, images: images, valid_attrs: valid_attrs} do
+      image_ids = Enum.map(images, fn image -> image.external_id end)
+      added_image_ids = image_ids
+
+      {:ok, post} =
+        Social.create_post(user, %{valid_attrs | "image_ids" => ["aaa-bbb" | added_image_ids]})
+
+      assert image_ids == Enum.map(post.images, fn image -> image.external_id end)
+    end
   end
 
   describe "update_post" do
@@ -250,6 +260,16 @@ defmodule VuePhoenix.SocialTest do
     end
 
     test "successfully", %{image: image} do
+      assert {:ok, _} = Social.delete_image(image)
+    end
+
+    test "also delete attachment", %{image: image} do
+      image
+      |> Image.changeset_for_update(%{
+        "attachment" => %Plug.Upload{path: "test/fixtures/sample.png", filename: "sample.png"}
+      })
+      |> Repo.update()
+
       assert {:ok, _} = Social.delete_image(image)
     end
   end

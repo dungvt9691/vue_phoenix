@@ -56,11 +56,7 @@ defmodule VuePhoenix.Avatar do
 
   # Override the storage directory:
   def storage_dir(version, _) do
-    if Mix.env() == :test do
-      "uploads/test/avatar/#{version}"
-    else
-      "uploads/avatar/#{version}"
-    end
+    "#{super(version, {})}/avatar/#{version}"
   end
 
   # Provide a default URL if there hasn't been a file uploaded
