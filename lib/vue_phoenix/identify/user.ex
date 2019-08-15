@@ -7,7 +7,7 @@ defmodule VuePhoenix.Identify.User do
 
   alias VuePhoenix.Identify.Token
   alias VuePhoenix.Services.Encryption
-  alias VuePhoenix.Social.{Image, Post}
+  alias VuePhoenix.Social.{Comment, Image, Post}
 
   @email_regex ~r/(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/
 
@@ -15,6 +15,7 @@ defmodule VuePhoenix.Identify.User do
     has_many :tokens, Token
     has_many :posts, Post
     has_many :images, Image
+    has_many :comments, Comment
 
     # FIELDS
     field :external_id, Ecto.UUID, autogenerate: true

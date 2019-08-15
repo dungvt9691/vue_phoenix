@@ -1,18 +1,15 @@
-defmodule VuePhoenix.Social.Post do
+defmodule VuePhoenix.Social.Comment do
   @moduledoc false
 
   use Ecto.Schema
   import Ecto.Changeset
 
   alias VuePhoenix.Identify.User
-  alias VuePhoenix.Social.{Comment, PostImage}
+  alias VuePhoenix.Social.Post
 
-  schema "posts" do
+  schema "comments" do
     belongs_to :user, User
-    has_many :comments, Comment
-    has_many :post_images, PostImage
-    has_many :images, through: [:post_images, :image]
-
+    belongs_to :post, Post
     field :content, :string
     field :external_id, Ecto.UUID, autogenerate: true
 
@@ -20,8 +17,14 @@ defmodule VuePhoenix.Social.Post do
   end
 
   @doc false
-  def changeset(post, attrs) do
-    post
+  def changeset(comment, attrs) do
+    comment
+    |> cast(attrs, [:content, :post_id])
+    |> validate_required([:content])
+  end
+
+  def changeset_for_update(comment, attrs) do
+    comment
     |> cast(attrs, [:content])
     |> validate_required([:content])
   end

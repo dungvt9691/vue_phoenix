@@ -122,4 +122,41 @@ defmodule VuePhoenix.Social do
   def delete_image(%Image{} = image) do
     Repo.delete(image)
   end
+
+  alias VuePhoenix.Social.Comment
+
+  def list_comments(post, params \\ %{}) do
+    Comment
+    |> preload([:user])
+    |> where([i], i.post_id == ^post.id)
+    |> order_by(desc: :id)
+    |> Repo.paginate(page: params["page"], page_size: params["limit"])
+  end
+
+  def get_comment_by_user!(current_user, id) do
+    Comment
+    |> preload([:user])
+    |> Repo.get_by(%{external_id: id, user_id: current_user.id})
+  rescue
+    _err -> nil
+  end
+
+  def create_comment(current_user, post, attrs \\ %{}) do
+    current_user
+    |> Ecto.build_assoc(:comments)
+    |> Repo.preload([:user])
+    |> Comment.changeset(Map.put(attrs, "post_id", post.id))
+    |> Repo.insert()
+  end
+
+  def update_comment(%Comment{} = comment, attrs) do
+    comment
+    |> Repo.preload([:user])
+    |> Comment.changeset_for_update(attrs)
+    |> Repo.update()
+  end
+
+  def delete_comment(%Comment{} = comment) do
+    Repo.delete(comment)
+  end
 end
