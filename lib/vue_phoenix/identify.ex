@@ -6,7 +6,7 @@ defmodule VuePhoenix.Identify do
 
   alias VuePhoenix.{Mailer, Repo}
   alias VuePhoenix.Identify.{Token, User}
-  alias VuePhoenix.Services.{Encryption, SendMail}
+  alias VuePhoenix.Services.{Encryption, Facebook, SendMail}
   alias VuePhoenix.Services.Token, as: TokenService
 
   def sign_in(%{email: email, password: password}) do
@@ -94,9 +94,46 @@ defmodule VuePhoenix.Identify do
     end
   end
 
+  def social_login(provider, access_token) do
+    case String.to_atom(provider) do
+      :facebook ->
+        case Facebook.sign_in(access_token) do
+          {:ok, user_data} ->
+            insert_or_update_user(user_data)
+
+          error ->
+            error
+        end
+    end
+  end
+
   def update(user, params) do
     user
     |> User.changeset_for_update(params)
     |> Repo.update()
+  end
+
+  defp insert_or_update_user(params) do
+    {:ok, user} =
+      case Repo.get_by(User, %{email: params.email}) do
+        nil ->
+          %User{}
+          |> User.changeset_for_social_login(params)
+          |> Repo.insert()
+
+        user ->
+          {:ok, user}
+      end
+
+    user
+    |> User.changeset_for_update(params)
+    |> Repo.update()
+
+    code = TokenService.generate(user)
+
+    user
+    |> Ecto.build_assoc(:tokens, %{code: code})
+    |> Repo.preload([:user])
+    |> Repo.insert()
   end
 end

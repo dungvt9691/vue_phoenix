@@ -73,6 +73,12 @@ config :vue_phoenix, VuePhoenix.Mailer,
   retries: 1,
   auth: :if_available
 
+config :facebook,
+  app_id: System.get_env("FACEBOOK_APP_ID"),
+  app_secret: System.get_env("FACEBOOK_APP_SECRET"),
+  # or "https://graph.facebook.com/v2.11" to specify a version.
+  graph_url: System.get_env("FACEBOOK_GRAPH_URL")
+
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
 import_config "prod.secret.exs"

@@ -5,30 +5,23 @@ defmodule VuePhoenixWeb.RegistrationsControllerTest do
   alias VuePhoenix.Identify
 
   setup do
+    sign_up_attrs = %{
+      email: "dungvt9691@gmail.com",
+      password: "password",
+      password_confirmation: "password"
+    }
+
+    invalid_params = [email: "dungvt9691", password: "123", password_confirmation: "123123"]
+
     conn =
       build_conn()
       |> put_req_header("accept", "application/vnd.api+json")
       |> put_req_header("content-type", "application/vnd.api+json")
 
-    [conn: conn]
+    [conn: conn, sign_up_attrs: sign_up_attrs, invalid_params: invalid_params]
   end
 
   describe "create" do
-    setup do
-      sign_up_attrs = %{
-        email: "dungvt9691@gmail.com",
-        password: "password",
-        password_confirmation: "password"
-      }
-
-      invalid_params = [email: "dungvt9691", password: "123", password_confirmation: "123123"]
-
-      [
-        sign_up_attrs: sign_up_attrs,
-        invalid_params: invalid_params
-      ]
-    end
-
     test "successfully", %{conn: conn, sign_up_attrs: sign_up_attrs} do
       conn =
         conn
