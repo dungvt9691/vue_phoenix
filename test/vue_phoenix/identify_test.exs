@@ -3,8 +3,10 @@ defmodule VuePhoenix.IdentifyTest do
   use VuePhoenix.DataCase
   use Bamboo.Test
 
+  import Mock
   import VuePhoenix.Factory
-  alias VuePhoenix.Identify
+  alias VuePhoenix.{Identify, Repo}
+  alias VuePhoenix.Identify.{User}
   alias VuePhoenix.Services.SendMail
 
   setup do
@@ -81,6 +83,12 @@ defmodule VuePhoenix.IdentifyTest do
       assert {:ok, _} = Identify.forgot_password(user.email)
       assert_delivered_email(SendMail.reset_password_instructions(user))
     end
+
+    test "There is SMTP_FROM variable", %{user: user} do
+      System.put_env("SMTP_FROM", "<Vue Phoenix dungvt9691@gmail.com>")
+      assert {:ok, _} = Identify.forgot_password(user.email)
+      assert_delivered_email(SendMail.reset_password_instructions(user))
+    end
   end
 
   describe "reset_password" do
@@ -123,6 +131,173 @@ defmodule VuePhoenix.IdentifyTest do
 
     test "invalid params", %{reset_password_params: reset_password_params} do
       assert {:error, _} = Identify.reset_password(%{reset_password_params | "password" => "123"})
+    end
+  end
+
+  describe "social_login" do
+    setup do
+      image_url = "https://test.com/avatar.jpg"
+
+      [image_url: image_url]
+    end
+
+    test "fetch Facebook user data success", %{
+      image_url: image_url
+    } do
+      with_mocks([
+        {
+          HTTPoison,
+          [],
+          [get!: fn _url -> %HTTPoison.Response{body: File.read!("test/fixtures/sample.jpg")} end]
+        },
+        {
+          Facebook,
+          [],
+          [
+            me: fn _fields, _access_token ->
+              {:ok,
+               %{
+                 "email" => "dungvt9691@gmail.com",
+                 "first_name" => "Dung",
+                 "middle_name" => "The",
+                 "last_name" => "Vu",
+                 "birthday" => "06/09/1991",
+                 "picture" => %{
+                   "data" => %{
+                     "url" => image_url
+                   }
+                 }
+               }}
+            end
+          ]
+        }
+      ]) do
+        Identify.social_login("facebook", "access-token")
+        user = Repo.get_by(User, %{email: "dungvt9691@gmail.com"})
+        refute nil == user
+        assert "dungvt9691@gmail.com" = user.email
+        assert "The Dung" = user.first_name
+        assert "Vu" = user.last_name
+        assert ~N[1991-09-06 00:00:00] = user.birthday
+        assert "download.jpg" = user.avatar.file_name
+      end
+    end
+
+    test "fetch Facebook user data success and email existed", %{
+      image_url: image_url
+    } do
+      with_mocks([
+        {
+          HTTPoison,
+          [],
+          [get!: fn _url -> %HTTPoison.Response{body: File.read!("test/fixtures/sample.jpg")} end]
+        },
+        {
+          Facebook,
+          [],
+          [
+            me: fn _fields, _access_token ->
+              {:ok,
+               %{
+                 "email" => "dungvt9691@gmail.com",
+                 "first_name" => "Dung",
+                 "middle_name" => "The",
+                 "last_name" => "Vu",
+                 "birthday" => "06/09/1991",
+                 "picture" => %{
+                   "data" => %{
+                     "url" => image_url
+                   }
+                 }
+               }}
+            end
+          ]
+        }
+      ]) do
+        user = insert(:user, email: "dungvt9691@gmail.com")
+        Identify.social_login("facebook", "access-token")
+        updated_user = Repo.get_by(User, %{email: "dungvt9691@gmail.com"})
+        refute user == updated_user
+      end
+    end
+
+    test "fetch Facebook user data success and data invalid", %{
+      image_url: image_url
+    } do
+      with_mocks([
+        {
+          HTTPoison,
+          [],
+          [get!: fn _url -> raise "error" end]
+        },
+        {
+          Facebook,
+          [],
+          [
+            me: fn _fields, _access_token ->
+              {:ok,
+               %{
+                 "email" => "dungvt9691@gmail.com",
+                 "first_name" => "Dung",
+                 "middle_name" => "The",
+                 "last_name" => "Vu",
+                 "birthday" => "1991/09/06",
+                 "picture" => %{
+                   "data" => %{
+                     "url" => image_url
+                   }
+                 }
+               }}
+            end
+          ]
+        }
+      ]) do
+        Identify.social_login("facebook", "access-token")
+        user = Repo.get_by(User, %{email: "dungvt9691@gmail.com"})
+        refute nil == user
+        assert "dungvt9691@gmail.com" = user.email
+        assert "The Dung" = user.first_name
+        assert "Vu" = user.last_name
+        refute nil = user.birthday
+        refute nil = user.avatar
+      end
+    end
+
+    test "fetch Facebook user data error" do
+      with_mocks([
+        {
+          HTTPoison,
+          [],
+          [get!: fn _url -> %HTTPoison.Response{body: File.read!("test/fixtures/sample.jpg")} end]
+        },
+        {
+          Facebook,
+          [],
+          [
+            me: fn _fields, _access_token ->
+              {:error,
+               %{
+                 "errors" => %{
+                   "code" => 190,
+                   "fbtrace_id" => "Ad3Ool8_aQf3FyhPf4nYD9I",
+                   "message" => "Malformed access token",
+                   "type" => "OAuthException"
+                 }
+               }}
+            end
+          ]
+        }
+      ]) do
+        assert {:error,
+                %{
+                  "errors" => %{
+                    "code" => 190,
+                    "fbtrace_id" => "Ad3Ool8_aQf3FyhPf4nYD9I",
+                    "message" => "Malformed access token",
+                    "type" => "OAuthException"
+                  }
+                }} = Identify.social_login("facebook", "access-token")
+      end
     end
   end
 

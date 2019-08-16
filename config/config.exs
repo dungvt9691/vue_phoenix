@@ -49,6 +49,12 @@ config :vue_phoenix, VuePhoenix.Mailer,
 config :arc,
   storage_dir: "uploads"
 
+config :facebook,
+  app_id: System.get_env("FACEBOOK_APP_ID"),
+  app_secret: System.get_env("FACEBOOK_APP_SECRET"),
+  # or "https://graph.facebook.com/v2.11" to specify a version.
+  graph_url: "https://graph.facebook.com"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

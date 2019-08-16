@@ -1,7 +1,7 @@
 defmodule VuePhoenixWeb.Users.ProfileController do
   use VuePhoenixWeb, :controller
   alias VuePhoenix.{Identify, Repo}
-  alias VuePhoenix.Services.Datetime
+  alias VuePhoenix.Services.DateTime
 
   def show(conn, _) do
     user =
@@ -20,10 +20,12 @@ defmodule VuePhoenixWeb.Users.ProfileController do
   end
 
   def update(conn, _) do
-    date = Datetime.parse_date(conn.params["birthday"])
-    params = %{conn.params | "birthday" => date}
+    if conn.params["birthday"] do
+      date = DateTime.parse_date(conn.params["birthday"])
+      Map.put(conn.params, "birthday", date)
+    end
 
-    case Identify.update(conn.assigns[:signed_user], params) do
+    case Identify.update(conn.assigns[:signed_user], conn.params) do
       {:ok, profile} ->
         conn
         |> put_status(:ok)

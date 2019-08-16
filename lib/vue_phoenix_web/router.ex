@@ -37,6 +37,7 @@ defmodule VuePhoenixWeb.Router do
     post "/register", RegistrationsController, :create
     post "/reset_password", PasswordsController, :create
     put "/reset_password", PasswordsController, :update
+    post "/oauth", OauthController, :create
   end
 
   scope "/", VuePhoenixWeb do

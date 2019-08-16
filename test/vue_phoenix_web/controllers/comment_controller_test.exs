@@ -38,6 +38,14 @@ defmodule VuePhoenixWeb.CommentControllerTest do
       ]
     end
 
+    test "post not found", %{conn: conn} do
+      conn =
+        conn
+        |> get(Routes.post_comment_path(conn, :index, "aaa-bbb"))
+
+      assert conn.status == 404
+    end
+
     test "lists all entries on index", %{conn: conn, post: post} do
       conn =
         conn

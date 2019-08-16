@@ -17,7 +17,7 @@ defmodule VuePhoenix.Avatar do
   # Include ecto support (requires package arc_ecto installed):
   # use Arc.Ecto.Definition
 
-  @versions [:s500x500, :s250x250, :s50x50]
+  @versions [:s200x200, :s100x100, :s50x50]
 
   # To add a thumbnail version:
   # @versions [:original, :thumb]
@@ -32,12 +32,12 @@ defmodule VuePhoenix.Avatar do
     ~w(.jpg .jpeg .gif .png) |> Enum.member?(Path.extname(file.file_name))
   end
 
-  def transform(:s500x500, _) do
-    {:convert, "-strip -thumbnail 500x500^ -gravity center -extent 500x500 -format png", :png}
+  def transform(:s200x200, _) do
+    {:convert, "-strip -thumbnail 200x200^ -gravity center -extent 200x200 -format png", :png}
   end
 
-  def transform(:s250x250, _) do
-    {:convert, "-strip -thumbnail 250x250^ -gravity center -extent 250x250 -format png", :png}
+  def transform(:s100x100, _) do
+    {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png", :png}
   end
 
   def transform(:s50x50, _) do

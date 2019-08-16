@@ -69,7 +69,10 @@ defmodule VuePhoenix.MixProject do
       {:sweet_xml, "~> 0.6"},
       {:excoveralls, "~> 0.10", only: :test},
       {:bamboo, "~> 1.3"},
-      {:bamboo_smtp, "~> 1.7.0"}
+      {:bamboo_smtp, "~> 1.7.0"},
+      {:timex, "~> 3.5"},
+      {:mock, "~> 0.3.0", only: :test},
+      {:facebook, "~> 0.20.0"}
     ]
   end
 

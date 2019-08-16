@@ -19,12 +19,21 @@ defmodule VuePhoenixWeb.Users.ProfileControllerTest do
   describe "show profile" do
     setup [:sign_up_user]
 
-    test "authorized", %{conn: conn, token: token} do
+    setup %{token: token} do
+      include_params = %{"include" => "tokens,posts,images"}
+
       conn =
         build_conn()
         |> put_req_header("authorization", "Bearer #{token.code}")
         |> put_req_header("accept", "application/vnd.api+json")
         |> put_req_header("content-type", "application/vnd.api+json")
+
+      [conn: conn, include_params: include_params]
+    end
+
+    test "authorized", %{conn: conn} do
+      conn =
+        conn
         |> get(Routes.profile_path(conn, :show))
 
       profile = Repo.get_by!(User, email: "dungvt9691@gmail.com")
@@ -33,14 +42,22 @@ defmodule VuePhoenixWeb.Users.ProfileControllerTest do
       assert json_response(conn, 200)["data"]["attributes"] == %{
                "email" => profile.email,
                "avatar" => %{
-                 "s250x250" => avatar.s250x250,
-                 "s500x500" => avatar.s500x500,
+                 "s100x100" => avatar.s100x100,
+                 "s200x200" => avatar.s200x200,
                  "s50x50" => avatar.s50x50
                },
                "birthday" => profile.birthday,
                "first_name" => profile.first_name,
                "last_name" => profile.last_name
              }
+    end
+
+    test "show profile with included data", %{conn: conn, include_params: include_params} do
+      conn =
+        conn
+        |> get(Routes.profile_path(conn, :show, include_params))
+
+      assert json_response(conn, 200)["included"]
     end
 
     test "unauthorized", %{conn: conn} do
@@ -89,8 +106,8 @@ defmodule VuePhoenixWeb.Users.ProfileControllerTest do
       assert json_response(conn, 200)["data"]["attributes"] == %{
                "email" => profile.email,
                "avatar" => %{
-                 "s250x250" => avatar.s250x250,
-                 "s500x500" => avatar.s500x500,
+                 "s100x100" => avatar.s100x100,
+                 "s200x200" => avatar.s200x200,
                  "s50x50" => avatar.s50x50
                },
                "birthday" => NaiveDateTime.to_iso8601(profile.birthday),
