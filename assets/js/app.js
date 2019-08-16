@@ -18,6 +18,8 @@ import 'phoenix_html';
 import Vue from 'vue';
 import ElementUI from 'element-ui';
 import VueCookie from 'vue-cookie';
+import FBSignInButton from 'vue-facebook-signin-button';
+
 import '../css/app.scss';
 import App from './App.vue';
 import router from './router';
@@ -25,6 +27,7 @@ import store from './store/index';
 
 Vue.use(ElementUI);
 Vue.use(VueCookie);
+Vue.use(FBSignInButton);
 
 new Vue({
   router,

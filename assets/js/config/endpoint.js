@@ -1,3 +1,6 @@
 export default {
-  AUTH: 'xxx',
+  AUTH: '/api/auth',
+  OAUTH: '/api/oauth',
+  REGISTER: '/api/register',
+  RESET_PASSWORD: '/api/reset_password',
 };

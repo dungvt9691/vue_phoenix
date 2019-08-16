@@ -1,19 +1,16 @@
 <template>
   <el-form
     label-position="top"
-    :model="signUpForm"
+    :model="resetPasswordForm"
     :rules="rules"
-    ref="signUpForm"
+    ref="resetPasswordForm"
     label-width="200px"
   >
-    <el-form-item :error="errors.email" label="Email" prop="email">
-      <el-input :disabled="callingAPI" v-model="signUpForm.email"></el-input>
-    </el-form-item>
-    <el-form-item :error="errors.password" label="Password" prop="password">
+    <el-form-item :error="errors.password" label="New Password" prop="password">
       <el-input
         :disabled="callingAPI"
         :type="isShowPassword ? 'text' : 'password'"
-        v-model="signUpForm.password"
+        v-model="resetPasswordForm.password"
         autocomplete="off"
       >
         <i
@@ -25,13 +22,13 @@
     </el-form-item>
     <el-form-item
       :error="errors.password_confirmation"
-      label="Password Confirmation"
+      label="New Password Confirmation"
       prop="passwordConfirmation"
     >
       <el-input
         :disabled="callingAPI"
         :type="isShowPasswordConfirmation ? 'text' : 'password'"
-        v-model="signUpForm.passwordConfirmation"
+        v-model="resetPasswordForm.passwordConfirmation"
         autocomplete="off"
       >
         <i
@@ -45,26 +42,23 @@
       <el-button
         class="mt-1"
         type="primary"
-        @click="submitForm('signUpForm')"
+        @click="submitForm('resetPasswordForm')"
         :loading="callingAPI"
       >
-        Sign up
+        Change password
       </el-button>
-      <span class="px-1">or</span>
-      <facebook-auth @updateCallingAPI="updateCallingAPI">
-        Sign up with Facebook
-      </facebook-auth>
     </el-form-item>
     <el-row class="mt-4" :gutter="20">
-      <el-col :span="12">
-        <router-link :to="{ name: 'ForgotPasswordScreen' }">
-          Forgot password?
-        </router-link>
-      </el-col>
-      <el-col :span="12" class="text-right">
+      <el-col :span="10">
         Already Registered?
         <router-link :to="{ name: 'SignInScreen' }">
           Sign in
+        </router-link>
+      </el-col>
+      <el-col :span="14" class="text-right">
+        Don't have account?
+        <router-link :to="{ name: 'SignUpScreen' }">
+          Sign up now
         </router-link>
       </el-col>
     </el-row>
@@ -76,20 +70,16 @@ import axios from 'axios';
 import userServices from '../../services/users';
 import { parseError } from '../../lib/common';
 import ENDPOINT from '../../config/endpoint';
-import FacebookAuth from './FacebookAuth.vue';
 
 export default {
-  name: 'SignUpForm',
-  components: {
-    FacebookAuth,
-  },
+  name: 'ResetPasswordForm',
   data() {
     const validatePass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('Please input the password'));
       } else {
-        if (this.signUpForm.passwordConfirmation !== '') {
-          this.$refs.signUpForm.validateField('passwordConfirmation');
+        if (this.resetPasswordForm.passwordConfirmation !== '') {
+          this.$refs.resetPasswordForm.validateField('passwordConfirmation');
         }
         callback();
       }
@@ -97,7 +87,7 @@ export default {
     const validatePass2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('Please input the password again'));
-      } else if (value !== this.signUpForm.password) {
+      } else if (value !== this.resetPasswordForm.password) {
         callback(new Error('Password confirmation doesn\'t match!'));
       } else {
         callback();
@@ -105,18 +95,14 @@ export default {
     };
     return {
       callingAPI: false,
+      resetPasswordToken: '',
       isShowPassword: false,
       isShowPasswordConfirmation: false,
-      signUpForm: {
-        email: '',
+      resetPasswordForm: {
         password: '',
         passwordConfirmation: '',
       },
       rules: {
-        email: [
-          { required: true, message: 'Please input email address', trigger: 'blur' },
-          { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
-        ],
         password: [
           { validator: validatePass, trigger: 'blur' },
         ],
@@ -125,31 +111,32 @@ export default {
         ],
       },
       errors: {
-        email: '',
         password: '',
         password_confirmation: '',
       },
     };
   },
+  beforeMount() {
+    this.resetPasswordToken = this.$route.query.token;
+  },
   methods: {
-    updateCallingAPI(callingAPI) {
-      this.callingAPI = callingAPI;
-    },
-
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.errors = {};
           this.callingAPI = true;
-          axios.post(ENDPOINT.REGISTER, {
-            email: this.signUpForm.email,
-            password: this.signUpForm.password,
-            password_confirmation: this.signUpForm.passwordConfirmation,
+          axios.put(ENDPOINT.RESET_PASSWORD, {
+            reset_password_token: this.resetPasswordToken,
+            password: this.resetPasswordForm.password,
+            password_confirmation: this.resetPasswordForm.passwordConfirmation,
           })
-            .then((res) => {
+            .then(() => {
               this.callingAPI = false;
-              userServices.storedToken(res.data.data.attributes.code);
-              this.$router.push({ name: 'HomeScreen' });
+              this.$notify.success({
+                title: 'Success',
+                message: 'You can sign in to website with new password from now.',
+              });
+              this.$router.push({ name: 'SignInScreen' });
             })
             .catch((err) => {
               this.callingAPI = false;
@@ -157,6 +144,12 @@ export default {
               switch (response.status) {
                 case 422:
                   this.errors = parseError(response.data.errors);
+                  break;
+                case 404:
+                  this.$notify.error({
+                    title: 'Error',
+                    message: 'Reset password token is invalid or expired',
+                  });
                   break;
                 default:
                   this.$notify.error({

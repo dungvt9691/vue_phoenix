@@ -17,12 +17,8 @@ defmodule VuePhoenix.Identify do
       user ->
         case Encryption.validate_password(user, password) do
           {:ok, user} ->
-            token = TokenService.generate(user)
-
             user
-            |> Ecto.build_assoc(:tokens, %{code: token})
-            |> Repo.preload([:user])
-            |> Repo.insert()
+            |> build_token()
 
           {:error, reason} ->
             {:error, %{password: reason}}
@@ -42,12 +38,8 @@ defmodule VuePhoenix.Identify do
 
     case Repo.insert(changeset) do
       {:ok, user} ->
-        code = TokenService.generate(user)
-
         user
-        |> Ecto.build_assoc(:tokens, %{code: code})
-        |> Repo.preload([:user])
-        |> Repo.insert()
+        |> build_token()
 
       error ->
         error
@@ -63,6 +55,9 @@ defmodule VuePhoenix.Identify do
         user
         |> User.changeset_for_reset_password()
         |> Repo.update()
+
+        user
+        |> Repo.reload!
 
         user
         |> SendMail.reset_password_instructions()
@@ -99,8 +94,9 @@ defmodule VuePhoenix.Identify do
       :facebook ->
         case Facebook.sign_in(access_token) do
           {:ok, user_data} ->
-            insert_or_update_user(user_data)
-
+            user = insert_or_update_user(user_data)
+            user
+              |> build_token()
           error ->
             error
         end
@@ -129,6 +125,10 @@ defmodule VuePhoenix.Identify do
     |> User.changeset_for_update(params)
     |> Repo.update()
 
+    user
+  end
+
+  defp build_token(user) do
     code = TokenService.generate(user)
 
     user

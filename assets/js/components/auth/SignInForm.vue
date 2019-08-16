@@ -33,15 +33,9 @@
         Sign in
       </el-button>
       <span class="px-1">or</span>
-      <el-button
-        class="btn-facebook mt-1"
-        type="primary"
-        @click="submitForm('signInForm')"
-        :loading="callingAPI"
-      >
-        <i class="fab fa-facebook-f mr-1"></i>
+      <facebook-auth @updateCallingAPI="updateCallingAPI">
         Sign in with Facebook
-      </el-button>
+      </facebook-auth>
     </el-form-item>
     <el-row class="mt-4" :gutter="20">
       <el-col :span="10">
@@ -62,9 +56,14 @@
 <script>
 import axios from 'axios';
 import userServices from '../../services/users';
+import ENDPOINT from '../../config/endpoint';
+import FacebookAuth from './FacebookAuth.vue';
 
 export default {
   name: 'SignInForm',
+  components: {
+    FacebookAuth,
+  },
   data() {
     return {
       callingAPI: false,
@@ -89,12 +88,16 @@ export default {
     };
   },
   methods: {
+    updateCallingAPI(callingAPI) {
+      this.callingAPI = callingAPI;
+    },
+
     submitForm(formName) {
-      this.errors = {};
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.errors = {};
           this.callingAPI = true;
-          axios.post('/api/auth', {
+          axios.post(ENDPOINT.AUTH, {
             email: this.signInForm.email,
             password: this.signInForm.password,
           })

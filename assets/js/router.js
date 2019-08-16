@@ -4,7 +4,7 @@ import HomeScreen from './views/home/index.vue';
 import SignInScreen from './views/sessions/new.vue';
 import SignUpScreen from './views/registrations/new.vue';
 import ForgotPasswordScreen from './views/passwords/new.vue';
-import ChangePasswordScreen from './views/passwords/edit.vue';
+import ResetPasswordScreen from './views/passwords/edit.vue';
 
 import userServices from './services/users';
 
@@ -38,9 +38,9 @@ const router = new Router({
       meta: { auth: false },
     },
     {
-      path: '/change-password',
-      name: 'ChangePasswordScreen',
-      component: ChangePasswordScreen,
+      path: '/reset-password',
+      name: 'ResetPasswordScreen',
+      component: ResetPasswordScreen,
       meta: { auth: false },
     },
   ],

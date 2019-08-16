@@ -36,6 +36,7 @@
 <script>
 import axios from 'axios';
 import userServices from '../../services/users';
+import ENDPOINT from '../../config/endpoint';
 
 export default {
   name: 'Header',
@@ -44,7 +45,7 @@ export default {
       const token = userServices.accessToken();
       userServices.signOut();
       this.$router.push({ name: 'SignInScreen' });
-      axios.delete('/api/auth', {
+      axios.delete(ENDPOINT.AUTH, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

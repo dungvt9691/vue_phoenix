@@ -6,11 +6,12 @@
     ref="forgotPasswordForm"
     label-width="120px"
   >
-    <el-form-item label="Email" prop="email">
-      <el-input v-model="forgotPasswordForm.email"></el-input>
+    <el-form-item :error="errors.email" label="Email" prop="email">
+      <el-input :disabled="callingAPI" v-model="forgotPasswordForm.email"></el-input>
     </el-form-item>
     <el-form-item>
       <el-button
+        :loading="callingAPI"
         class="mt-1"
         type="primary"
         @click="submitForm('forgotPasswordForm')"
@@ -36,10 +37,14 @@
 </template>
 
 <script>
+import axios from 'axios';
+import ENDPOINT from '../../config/endpoint';
+
 export default {
   name: 'ForgotPasswordForm',
   data() {
     return {
+      callingAPI: false,
       forgotPasswordForm: {
         email: '',
       },
@@ -49,17 +54,43 @@ export default {
           { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
         ],
       },
+      errors: {
+        email: '',
+      },
     };
   },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log('submit!');
-          return false;
+          this.errors = {};
+          this.callingAPI = true;
+          axios.post(ENDPOINT.RESET_PASSWORD, {
+            email: this.forgotPasswordForm.email,
+          })
+            .then(() => {
+              this.$notify.success({
+                title: 'Success',
+                message: 'You will receive an email with instructions for how to reset your password in a few minutes.',
+              });
+              this.$router.push({ name: 'SignInScreen' });
+            })
+            .catch((err) => {
+              this.callingAPI = false;
+              const { response } = err;
+              switch (response.status) {
+                case 404:
+                  this.errors = response.data.errors;
+                  break;
+                default:
+                  this.$notify.error({
+                    title: 'Error',
+                    message: 'Something went wrong',
+                  });
+                  break;
+              }
+            });
         }
-        console.log('error submit!!');
-        return false;
       });
     },
   },
