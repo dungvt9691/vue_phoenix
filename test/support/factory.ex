@@ -9,7 +9,8 @@ defmodule VuePhoenix.Factory do
   def user_factory do
     %User{
       email: Faker.Internet.email(),
-      password: Faker.String.base64()
+      password: Faker.String.base64(),
+      reset_password_token: Faker.String.base64()
     }
   end
 

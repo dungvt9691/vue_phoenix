@@ -3,7 +3,8 @@ defmodule VuePhoenixWeb.ImageControllerTest do
   use VuePhoenixWeb.ConnCase
 
   import VuePhoenix.Factory
-  alias VuePhoenix.Identify
+  alias VuePhoenix.{Identify, Repo}
+  alias VuePhoenix.Social.Image
 
   def fixture(:sign_up) do
     {:ok, token} =
@@ -173,6 +174,20 @@ defmodule VuePhoenixWeb.ImageControllerTest do
     end
 
     test "successfully", %{image: image, conn: conn} do
+      conn =
+        conn
+        |> delete(Routes.image_path(conn, :delete, image.external_id))
+
+      assert conn.status == 204
+    end
+
+    test "also delete attachment", %{image: image, conn: conn} do
+      image
+      |> Image.changeset_for_update(%{
+        "attachment" => %Plug.Upload{path: "test/fixtures/sample.png", filename: "sample.png"}
+      })
+      |> Repo.update()
+
       conn =
         conn
         |> delete(Routes.image_path(conn, :delete, image.external_id))

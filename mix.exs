@@ -67,7 +67,9 @@ defmodule VuePhoenix.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.9"},
       {:sweet_xml, "~> 0.6"},
-      {:excoveralls, "~> 0.10", only: :test}
+      {:excoveralls, "~> 0.10", only: :test},
+      {:bamboo, "~> 1.3"},
+      {:bamboo_smtp, "~> 1.7.0"}
     ]
   end
 

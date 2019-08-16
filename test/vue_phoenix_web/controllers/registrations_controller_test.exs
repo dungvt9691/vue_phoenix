@@ -4,6 +4,15 @@ defmodule VuePhoenixWeb.RegistrationsControllerTest do
 
   alias VuePhoenix.Identify
 
+  setup do
+    conn =
+      build_conn()
+      |> put_req_header("accept", "application/vnd.api+json")
+      |> put_req_header("content-type", "application/vnd.api+json")
+
+    [conn: conn]
+  end
+
   describe "create" do
     setup do
       sign_up_attrs = %{
@@ -22,9 +31,7 @@ defmodule VuePhoenixWeb.RegistrationsControllerTest do
 
     test "successfully", %{conn: conn, sign_up_attrs: sign_up_attrs} do
       conn =
-        build_conn()
-        |> put_req_header("accept", "application/vnd.api+json")
-        |> put_req_header("content-type", "application/vnd.api+json")
+        conn
         |> post(Routes.registrations_path(conn, :create), sign_up_attrs)
 
       assert conn.status == 200
@@ -32,9 +39,7 @@ defmodule VuePhoenixWeb.RegistrationsControllerTest do
 
     test "failed", %{conn: conn, invalid_params: invalid_params} do
       conn =
-        build_conn()
-        |> put_req_header("accept", "application/vnd.api+json")
-        |> put_req_header("content-type", "application/vnd.api+json")
+        conn
         |> post(Routes.registrations_path(conn, :create), invalid_params)
 
       assert json_response(conn, 422) == %{
@@ -53,9 +58,7 @@ defmodule VuePhoenixWeb.RegistrationsControllerTest do
       Identify.sign_up(sign_up_attrs)
 
       conn =
-        build_conn()
-        |> put_req_header("accept", "application/vnd.api+json")
-        |> put_req_header("content-type", "application/vnd.api+json")
+        conn
         |> post(Routes.registrations_path(conn, :create), sign_up_attrs)
 
       assert json_response(conn, 422) == %{

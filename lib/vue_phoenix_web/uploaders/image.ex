@@ -57,11 +57,7 @@ defmodule VuePhoenix.Image do
 
   # Override the storage directory:
   def storage_dir(version, _) do
-    if Mix.env() == :test do
-      "uploads/test/images/#{version}"
-    else
-      "uploads/images/#{version}"
-    end
+    "#{super(version, {})}/images/#{version}"
   end
 
   # Provide a default URL if there hasn't been a file uploaded

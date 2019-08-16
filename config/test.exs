@@ -17,3 +17,10 @@ config :vue_phoenix, VuePhoenixWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+# Config email for dev env
+config :vue_phoenix, VuePhoenix.Mailer, adapter: Bamboo.TestAdapter
+
+# Config arc
+config :arc,
+  storage_dir: "uploads/test"

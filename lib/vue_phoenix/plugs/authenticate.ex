@@ -27,7 +27,6 @@ defmodule VuePhoenix.Plugs.Authenticate do
   defp authorized(conn, user, token) do
     # If you want, add new values to `conn`
     conn
-    |> assign(:signed_in, true)
     |> assign(:signed_user, user)
     |> assign(:current_token, token.code)
   end

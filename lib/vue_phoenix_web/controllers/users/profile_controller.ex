@@ -37,7 +37,7 @@ defmodule VuePhoenixWeb.Users.ProfileController do
 
       {:error, changeset} ->
         conn
-        |> put_status(:unprocessable_entity)
+        |> put_status(422)
         |> put_view(VuePhoenixWeb.ChangesetView)
         |> render("error.json", changeset: changeset)
     end

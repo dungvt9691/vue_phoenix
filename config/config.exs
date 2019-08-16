@@ -37,6 +37,18 @@ config :ja_serializer,
 config :phoenix, VuePhoenix.Endpoint,
   render_errors: [view: VuePhoenix.ErrorView, accepts: ~w(html json json-api)]
 
+# Config email for dev env
+config :vue_phoenix, VuePhoenix.Mailer,
+  adapter: Bamboo.SMTPAdapter,
+  server: "smtp.gmail.com",
+  port: 587,
+  username: {:system, "SMTP_USERNAME"},
+  password: {:system, "SMTP_PASSWORD"}
+
+# Config arc
+config :arc,
+  storage_dir: "uploads"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

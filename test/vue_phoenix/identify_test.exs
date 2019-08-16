@@ -1,9 +1,11 @@
 defmodule VuePhoenix.IdentifyTest do
   @moduledoc false
   use VuePhoenix.DataCase
+  use Bamboo.Test
 
   import VuePhoenix.Factory
   alias VuePhoenix.Identify
+  alias VuePhoenix.Services.SendMail
 
   setup do
     sign_up_params = %{
@@ -62,6 +64,65 @@ defmodule VuePhoenix.IdentifyTest do
 
     test "unsuccessfully", %{sign_up_params: sign_up_params} do
       assert {:error, _} = Identify.sign_up(%{sign_up_params | email: "dungvt9691"})
+    end
+  end
+
+  describe "forgot_password" do
+    setup do
+      user = insert(:user)
+      [user: user]
+    end
+
+    test "email address is not registered" do
+      assert {:error, _} = Identify.forgot_password("dungvt9691@gmail.com")
+    end
+
+    test "successfully", %{user: user} do
+      assert {:ok, _} = Identify.forgot_password(user.email)
+      assert_delivered_email(SendMail.reset_password_instructions(user))
+    end
+  end
+
+  describe "reset_password" do
+    setup do
+      expire_at =
+        NaiveDateTime.utc_now()
+        |> NaiveDateTime.add(86_400)
+        |> NaiveDateTime.truncate(:second)
+
+      user = insert(:user, reset_password_expire_at: expire_at)
+      token_expired_user = insert(:user, reset_password_expire_at: ~N[2019-01-01 00:00:00])
+
+      reset_password_params = %{
+        "reset_password_token" => user.reset_password_token,
+        "password" => "password",
+        "password_confirmation" => "password"
+      }
+
+      [
+        user: user,
+        token_expired_user: token_expired_user,
+        reset_password_params: reset_password_params
+      ]
+    end
+
+    test "token expired", %{
+      token_expired_user: token_expired_user,
+      reset_password_params: reset_password_params
+    } do
+      assert {:not_found, _} =
+               Identify.reset_password(%{
+                 reset_password_params
+                 | "reset_password_token" => token_expired_user.reset_password_token
+               })
+    end
+
+    test "successfully", %{reset_password_params: reset_password_params} do
+      assert {:ok, _} = Identify.reset_password(reset_password_params)
+    end
+
+    test "invalid params", %{reset_password_params: reset_password_params} do
+      assert {:error, _} = Identify.reset_password(%{reset_password_params | "password" => "123"})
     end
   end
 

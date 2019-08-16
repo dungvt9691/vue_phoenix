@@ -19,12 +19,7 @@ defmodule VuePhoenixWeb.SessionsController do
 
   @spec delete(Plug.Conn.t(), any) :: Plug.Conn.t()
   def delete(conn, _) do
-    case Identify.sign_out(conn.assigns[:current_token]) do
-      {:error, reason} ->
-        conn |> send_resp(400, reason)
-
-      {:ok, _} ->
-        conn |> send_resp(204, "")
-    end
+    Identify.sign_out(conn.assigns[:current_token])
+    conn |> send_resp(204, "")
   end
 end
