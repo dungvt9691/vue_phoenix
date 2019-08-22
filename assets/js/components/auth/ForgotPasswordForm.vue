@@ -70,7 +70,7 @@ export default {
           })
             .then(() => {
               this.$notify.success({
-                title: 'Success',
+                title: 'Forgot password successfully',
                 message: 'You will receive an email with instructions for how to reset your password in a few minutes.',
               });
               this.$router.push({ name: 'SignInScreen' });

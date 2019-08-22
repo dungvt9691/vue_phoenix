@@ -29,7 +29,7 @@ defmodule VuePhoenix.Avatar do
 
   # Whitelist file extensions:
   def validate({file, _}) do
-    ~w(.jpg .jpeg .gif .png) |> Enum.member?(Path.extname(file.file_name))
+    ~w(.jpg .jpeg .gif .png .JPG .JPEG .GIF .PNG) |> Enum.member?(Path.extname(file.file_name))
   end
 
   def transform(:s200x200, _) do

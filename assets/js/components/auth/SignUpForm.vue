@@ -118,9 +118,11 @@ export default {
           { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
         ],
         password: [
+          { required: true, message: 'Please input the password', trigger: 'blur' },
           { validator: validatePass, trigger: 'blur' },
         ],
         passwordConfirmation: [
+          { required: true, message: 'Please input the password again', trigger: 'blur' },
           { validator: validatePass2, trigger: 'blur' },
         ],
       },

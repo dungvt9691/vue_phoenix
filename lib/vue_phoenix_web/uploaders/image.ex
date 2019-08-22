@@ -17,7 +17,7 @@ defmodule VuePhoenix.Image do
   # Include ecto support (requires package arc_ecto installed):
   # use Arc.Ecto.Definition
 
-  @versions [:original, :s500x, :s250x, :s50x]
+  @versions [:original, :s500x, :s250x, :s50x, :s200x200]
 
   # To add a thumbnail version:
   # @versions [:original, :thumb]
@@ -29,7 +29,7 @@ defmodule VuePhoenix.Image do
 
   # Whitelist file extensions:
   def validate({file, _}) do
-    ~w(.jpg .jpeg .gif .png) |> Enum.member?(Path.extname(file.file_name))
+    ~w(.jpg .jpeg .gif .png .JPG .JPEG .GIF .PNG) |> Enum.member?(Path.extname(file.file_name))
   end
 
   # Define a thumbnail transformation:
@@ -43,6 +43,10 @@ defmodule VuePhoenix.Image do
 
   def transform(:s50x, _) do
     {:convert, "-strip -geometry 50x -format png", :png}
+  end
+
+  def transform(:s200x200, _) do
+    {:convert, "-strip -thumbnail 200x200^ -gravity center -extent 200x200 -format png", :png}
   end
 
   # Override the persisted filenames:

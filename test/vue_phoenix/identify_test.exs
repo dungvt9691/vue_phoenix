@@ -161,7 +161,6 @@ defmodule VuePhoenix.IdentifyTest do
                  "first_name" => "Dung",
                  "middle_name" => "The",
                  "last_name" => "Vu",
-                 "birthday" => "06/09/1991",
                  "picture" => %{
                    "data" => %{
                      "url" => image_url
@@ -178,7 +177,6 @@ defmodule VuePhoenix.IdentifyTest do
         assert "dungvt9691@gmail.com" = user.email
         assert "The Dung" = user.first_name
         assert "Vu" = user.last_name
-        assert ~N[1991-09-06 00:00:00] = user.birthday
         assert "download.jpg" = user.avatar.file_name
       end
     end
@@ -240,7 +238,6 @@ defmodule VuePhoenix.IdentifyTest do
                  "first_name" => "Dung",
                  "middle_name" => "The",
                  "last_name" => "Vu",
-                 "birthday" => "1991/09/06",
                  "picture" => %{
                    "data" => %{
                      "url" => image_url
@@ -257,7 +254,6 @@ defmodule VuePhoenix.IdentifyTest do
         assert "dungvt9691@gmail.com" = user.email
         assert "The Dung" = user.first_name
         assert "Vu" = user.last_name
-        refute nil = user.birthday
         refute nil = user.avatar
       end
     end

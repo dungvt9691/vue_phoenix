@@ -1,6 +1,7 @@
 defmodule VuePhoenixWeb.ImageController do
   use VuePhoenixWeb, :controller
 
+  alias VuePhoenix.Services.Images
   alias VuePhoenix.Social
 
   def index(conn, params, current_user) do
@@ -39,7 +40,7 @@ defmodule VuePhoenixWeb.ImageController do
     end
   end
 
-  def show(conn, %{"id" => id}, _user) do
+  def show(conn, %{"id" => id}, user) do
     case Social.get_image!(id) do
       nil ->
         conn |> send_resp(404, "Not found")
@@ -50,6 +51,9 @@ defmodule VuePhoenixWeb.ImageController do
         |> render("show.json-api",
           data: image,
           opts: [
+            meta: %{
+              "siblings" => image |> Images.siblings(conn.query_params["post_id"], user)
+            },
             include: conn.query_params["include"],
             fields: conn.query_params["fields"]
           ]
@@ -63,10 +67,6 @@ defmodule VuePhoenixWeb.ImageController do
         conn |> send_resp(404, "Not found")
 
       image ->
-        if image.attachment do
-          VuePhoenix.Image.delete({image.attachment, image})
-        end
-
         Social.delete_image(image)
         conn |> send_resp(204, "")
     end

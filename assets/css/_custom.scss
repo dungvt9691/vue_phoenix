@@ -3,6 +3,7 @@ body{
   font-family: Roboto;
   font-size: 14px;
   background: #F0F0F0;
+  color: #1d2129;
 }
 
 h1, h2, h3, h4, h5, h6{
@@ -13,4 +14,40 @@ h1, h2, h3, h4, h5, h6{
   margin: auto;
   width: 1024px;
   display: block;
+  padding: 0 15px;
+}
+
+.el-form--inline{
+  .el-form-item__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.el-input{
+  &__inner{
+    padding: 0 10px;
+    &:focus{
+      border-color: #DCDFE6;
+    }
+  }
+}
+
+.el-textarea{
+  &__inner{
+    &:focus{
+      border-color: #DCDFE6;
+    }
+    padding: 5px 10px;
+    resize: none;
+  }
+}
+
+.el-form-item__label{
+  padding-bottom: 0;
+}
+
+.el-form-item__error:first-letter{
+  text-transform: capitalize;
 }

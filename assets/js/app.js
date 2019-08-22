@@ -19,15 +19,22 @@ import Vue from 'vue';
 import ElementUI from 'element-ui';
 import VueCookie from 'vue-cookie';
 import FBSignInButton from 'vue-facebook-signin-button';
+import PhotoGrid from 'vue-photo-grid';
+import lang from 'element-ui/lib/locale/lang/en';
+import locale from 'element-ui/lib/locale';
 
 import '../css/app.scss';
 import App from './App.vue';
 import router from './router';
 import store from './store/index';
 
+// configure language
+locale.use(lang);
+
 Vue.use(ElementUI);
 Vue.use(VueCookie);
 Vue.use(FBSignInButton);
+Vue.use(PhotoGrid);
 
 new Vue({
   router,

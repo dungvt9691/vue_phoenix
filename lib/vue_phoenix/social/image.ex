@@ -6,12 +6,11 @@ defmodule VuePhoenix.Social.Image do
   import Ecto.Changeset
 
   alias VuePhoenix.Identify.User
-  alias VuePhoenix.Social.PostImage
+  alias VuePhoenix.Social.Post
 
   schema "images" do
     belongs_to :user, User
-    has_many :post_images, PostImage
-    has_many :posts, through: [:post_images, :post]
+    belongs_to :post, Post
     field :attachment, VuePhoenix.Image.Type
     field :external_id, Ecto.UUID, autogenerate: true
 
@@ -27,7 +26,7 @@ defmodule VuePhoenix.Social.Image do
   @doc false
   def changeset_for_update(image, attrs) do
     image
-    |> cast(attrs, [])
+    |> cast(attrs, [:post_id])
     |> cast_attachments(attrs, [:attachment])
   end
 end

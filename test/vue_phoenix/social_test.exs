@@ -148,11 +148,12 @@ defmodule VuePhoenix.SocialTest do
   describe "list_images" do
     setup do
       user = insert(:user)
-      insert_list(10, :image, user: user)
+      post = insert(:post, user: user)
+      insert_list(10, :image, user: user, post: post)
 
       images =
         Image
-        |> preload([:user])
+        |> preload([:user, :post])
         |> order_by(desc: :id)
         |> Repo.all()
 
@@ -190,7 +191,7 @@ defmodule VuePhoenix.SocialTest do
 
       image =
         Image
-        |> preload([:user])
+        |> preload([:user, :post])
         |> Repo.get(image.id)
 
       [image: image]

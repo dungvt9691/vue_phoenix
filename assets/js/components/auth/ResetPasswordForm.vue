@@ -133,8 +133,8 @@ export default {
             .then(() => {
               this.callingAPI = false;
               this.$notify.success({
-                title: 'Success',
-                message: 'You can sign in to website with new password from now.',
+                title: 'Changed password successfully',
+                message: 'You can sign in to website with the new password from now.',
               });
               this.$router.push({ name: 'SignInScreen' });
             })

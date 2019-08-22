@@ -6,7 +6,7 @@ defmodule VuePhoenix.Identify do
 
   alias VuePhoenix.{Mailer, Repo}
   alias VuePhoenix.Identify.{Token, User}
-  alias VuePhoenix.Services.{Encryption, Facebook, SendMail}
+  alias VuePhoenix.Services.{Encryption, Facebook, RandomString, SendMail}
   alias VuePhoenix.Services.Token, as: TokenService
 
   def sign_in(%{email: email, password: password}) do
@@ -57,7 +57,7 @@ defmodule VuePhoenix.Identify do
         |> Repo.update()
 
         user
-        |> Repo.reload!
+        |> Repo.reload!()
 
         user
         |> SendMail.reset_password_instructions()
@@ -95,8 +95,10 @@ defmodule VuePhoenix.Identify do
         case Facebook.sign_in(access_token) do
           {:ok, user_data} ->
             user = insert_or_update_user(user_data)
+
             user
-              |> build_token()
+            |> build_token()
+
           error ->
             error
         end
@@ -110,22 +112,24 @@ defmodule VuePhoenix.Identify do
   end
 
   defp insert_or_update_user(params) do
-    {:ok, user} =
-      case Repo.get_by(User, %{email: params.email}) do
-        nil ->
+    case Repo.get_by(User, %{email: params.email}) do
+      nil ->
+        params = Map.put(params, :password, RandomString.generate(10))
+
+        {:ok, user} =
           %User{}
           |> User.changeset_for_social_login(params)
           |> Repo.insert()
 
-        user ->
-          {:ok, user}
-      end
+        user
+        |> User.changeset_for_update(params)
+        |> Repo.update()
 
-    user
-    |> User.changeset_for_update(params)
-    |> Repo.update()
+        user
 
-    user
+      user ->
+        user
+    end
   end
 
   defp build_token(user) do

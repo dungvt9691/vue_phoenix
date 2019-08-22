@@ -16,24 +16,13 @@ function isSignedIn() {
   return false;
 }
 
-function userData() {
-  return JSON.parse(localStorage.getItem('user'));
-}
-
-function updateUserData(data) {
-  localStorage.setItem('user', JSON.stringify(data));
-}
-
 function signOut() {
   Vue.cookie.delete('token');
-  localStorage.removeItem('user');
 }
 
 export default {
   storedToken,
   accessToken,
   isSignedIn,
-  userData,
-  updateUserData,
   signOut,
 };

@@ -48,7 +48,8 @@ defmodule VuePhoenixWeb.Users.ProfileControllerTest do
                },
                "birthday" => profile.birthday,
                "first_name" => profile.first_name,
-               "last_name" => profile.last_name
+               "last_name" => profile.last_name,
+               "full_name" => nil
              }
     end
 
@@ -112,7 +113,8 @@ defmodule VuePhoenixWeb.Users.ProfileControllerTest do
                },
                "birthday" => NaiveDateTime.to_iso8601(profile.birthday),
                "first_name" => profile.first_name,
-               "last_name" => profile.last_name
+               "last_name" => profile.last_name,
+               "full_name" => "#{profile.first_name} #{profile.last_name}"
              }
     end
 

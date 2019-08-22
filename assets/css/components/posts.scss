@@ -1,0 +1,280 @@
+.post-content{
+  background: white;
+  border: 1px solid #dddfe2;
+  border-radius: 5px;
+  .post{
+    &__user{
+      padding: 15px;
+      display: flex;
+      position: relative;
+      &--info{
+        display: flex;
+        flex-direction: column;
+        .name{
+          font-size: 16px;
+        }
+        .created{
+          margin-top: 5px;
+          color: $--color-muted;
+        }
+      }
+    }
+    &__content{
+      padding: 0 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #dddfe2;
+      .read-more{
+        color: $--color-primary;
+        cursor: pointer;
+        &:hover{
+          text-decoration: underline;
+        }
+      }
+    }
+    &__editForm{
+      padding: 0 15px;
+      border-bottom: 1px solid #dddfe2;
+      .el-textarea__inner{
+        width: 100%;
+        border-radius: 0;
+      }
+    }
+    &__actions{
+      position: absolute;
+      right: 15px;
+      .el-button{
+        font-size: 20px;
+      }
+    }
+  }
+  .grid-component{
+    p{
+      font-size: 30px;
+    }
+  }
+}
+
+.post-new{
+  background: white;
+  border: 1px solid #dddfe2;
+  border-radius: 5px;
+  padding: 15px;
+  padding-bottom: 0;
+  .el-form-item{
+    &.files{
+      .file{
+        position: relative;
+        border-radius: 0;
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 4px;
+        img{
+          width: 100%;
+          cursor: pointer;
+        }
+        .mask{
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0);
+          transition: all 0.2s ease;
+          color: white;
+          cursor: pointer;
+          .el-button{
+            padding: 0;
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            opacity: 0;
+            color: white;
+          }
+        }
+        &:hover{
+          .mask{
+            background: rgba(0, 0, 0, 0.5);
+            .el-button{
+              opacity: 1;
+            }
+          }
+        }
+        &__uploading{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          .el-progress{
+            position: absolute;
+          }
+        }
+      }
+      .el-button{
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
+    }
+    &:first-child{
+      .el-form-item__content{
+        display: flex;
+        align-items: flex-start;
+        .el-avatar{
+          width: 40px;
+        }
+        .el-textarea{
+          width: auto;
+          flex: 1;
+          &__inner{
+            border: none;
+            font-size: 20px;
+          }
+        }
+        .el-icon-paperclip{
+          font-size: 25px;
+        }
+        .el-button{
+          height: 40px;
+          padding: 0;
+          span{
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+    }
+    &:last-child{
+      border-top: 1px solid #dddfe2;
+      margin-bottom: 5px;
+      .el-button{
+        width: 100%;
+      }
+    }
+  }
+}
+
+.post-loading{
+  padding: 15px;
+  @keyframes placeHolderShimmer{
+    0%{
+        background-position: -468px 0
+    }
+    100%{
+        background-position: 468px 0
+    }
+  }
+  
+  .animated-background {
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    background: #f6f7f8;
+    background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+    background-size: 800px 104px;
+    height: 96px;
+    position: relative;
+  }
+  
+  .background-masker {
+    background: #fff;
+    position: absolute;
+  }
+  
+  .background-masker.header-top,
+  .background-masker.header-bottom,
+  .background-masker.subheader-bottom {
+    top: 0;
+    left: 40px;
+    right: 0;
+    height: 10px;
+  }
+  
+  .background-masker.header-left,
+  .background-masker.subheader-left,
+  .background-masker.header-right,
+  .background-masker.subheader-right {
+    top: 10px;
+    left: 40px;
+    height: 8px;
+    width: 10px;
+  }
+  
+  .background-masker.header-bottom {
+    top: 18px;
+    height: 6px;
+  }
+  
+  .background-masker.subheader-left,
+  .background-masker.subheader-right {
+    top: 24px;
+    height: 6px;
+  }
+  
+  
+  .background-masker.header-right,
+  .background-masker.subheader-right {
+    width: auto;
+    left: 300px;
+    right: 0;
+  }
+  
+  .background-masker.subheader-right {
+    left: 230px;
+  }
+  
+  .background-masker.subheader-bottom {
+    top: 30px;
+    height: 10px;
+  }
+  
+  .background-masker.content-top,
+  .background-masker.content-second-line,
+  .background-masker.content-third-line,
+  .background-masker.content-second-end,
+  .background-masker.content-third-end,
+  .background-masker.content-first-end {
+    top: 40px;
+    left: 0;
+    right: 0;
+    height: 6px;
+  }
+  
+  .background-masker.content-top {
+    height:20px;
+  }
+  
+  .background-masker.content-first-end,
+  .background-masker.content-second-end,
+  .background-masker.content-third-end{
+    width: auto;
+    left: 380px;
+    right: 0;
+    top: 60px;
+    height: 8px;
+  }
+  
+  .background-masker.content-second-line  {
+    top: 68px;
+  }
+  
+  .background-masker.content-second-end {
+    left: 420px;
+    top: 74px;
+  }
+  
+  .background-masker.content-third-line {
+    top: 82px;
+  }
+  
+  .background-masker.content-third-end {
+    left: 300px;
+    top: 88px;
+  }
+}

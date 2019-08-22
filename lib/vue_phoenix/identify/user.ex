@@ -53,7 +53,8 @@ defmodule VuePhoenix.Identify.User do
   @doc false
   def changeset_for_social_login(user, attrs) do
     user
-    |> cast(attrs, [:email, :first_name, :last_name, :birthday])
+    |> cast(attrs, [:email, :first_name, :last_name, :password])
+    |> encrypt_password
   end
 
   @doc false
