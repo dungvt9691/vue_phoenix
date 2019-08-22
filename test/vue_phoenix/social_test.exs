@@ -86,7 +86,7 @@ defmodule VuePhoenix.SocialTest do
   describe "create_post" do
     setup do
       user = insert(:user)
-      images = insert_list(5, :image)
+      images = insert_list(5, :image, user: user)
       valid_attrs = %{"content" => "Content", "image_ids" => []}
       invalid_attrs = %{"content" => ""}
       [user: user, valid_attrs: valid_attrs, invalid_attrs: invalid_attrs, images: images]

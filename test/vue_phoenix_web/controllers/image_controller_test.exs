@@ -134,10 +134,11 @@ defmodule VuePhoenixWeb.ImageControllerTest do
   describe "show" do
     setup %{token: token} do
       post = insert(:post, user: token.user)
-      insert(:image, user: token.user)
+      post2 = insert(:post, user: token.user)
+      insert(:image, user: token.user, post: post2)
       image = insert(:image, user: token.user, post: post)
       next_image = insert(:image, user: token.user, post: post)
-      last_image = insert(:image, user: token.user)
+      last_image = insert(:image, user: token.user, post: post2)
 
       conn =
         build_conn()
@@ -147,6 +148,7 @@ defmodule VuePhoenixWeb.ImageControllerTest do
 
       [
         post: post,
+        post2: post2,
         image: image,
         next_image: next_image,
         last_image: last_image,
@@ -172,6 +174,8 @@ defmodule VuePhoenixWeb.ImageControllerTest do
 
     test "siblings meta without post_id", %{
       image: image,
+      post: post,
+      post2: post2,
       next_image: next_image,
       last_image: last_image,
       conn: conn
@@ -181,8 +185,14 @@ defmodule VuePhoenixWeb.ImageControllerTest do
         |> get(Routes.image_path(conn, :show, next_image.external_id))
 
       assert json_response(conn, 200)["meta"]["siblings"] == %{
-               "prev" => image.external_id,
-               "next" => last_image.external_id
+               "prev" => %{
+                 "id" => image.external_id,
+                 "post_id" => post.external_id
+               },
+               "next" => %{
+                 "id" => last_image.external_id,
+                 "post_id" => post2.external_id
+               }
              }
     end
 
@@ -197,8 +207,14 @@ defmodule VuePhoenixWeb.ImageControllerTest do
         |> get(Routes.image_path(conn, :show, next_image.external_id, post_id: post.external_id))
 
       assert json_response(conn, 200)["meta"]["siblings"] == %{
-               "prev" => image.external_id,
-               "next" => image.external_id
+               "prev" => %{
+                 "id" => image.external_id,
+                 "post_id" => post.external_id
+               },
+               "next" => %{
+                 "id" => image.external_id,
+                 "post_id" => post.external_id
+               }
              }
     end
 
@@ -213,8 +229,14 @@ defmodule VuePhoenixWeb.ImageControllerTest do
         |> get(Routes.image_path(conn, :show, image.external_id, post_id: post.external_id))
 
       assert json_response(conn, 200)["meta"]["siblings"] == %{
-               "prev" => next_image.external_id,
-               "next" => next_image.external_id
+               "prev" => %{
+                 "id" => next_image.external_id,
+                 "post_id" => post.external_id
+               },
+               "next" => %{
+                 "id" => next_image.external_id,
+                 "post_id" => post.external_id
+               }
              }
     end
   end

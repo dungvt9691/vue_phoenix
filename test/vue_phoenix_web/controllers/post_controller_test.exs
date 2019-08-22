@@ -89,7 +89,7 @@ defmodule VuePhoenixWeb.PostControllerTest do
 
   describe "create" do
     setup %{token: token} do
-      images = insert_list(5, :image)
+      images = insert_list(5, :image, user: token.user)
       valid_attrs = %{"content" => "Content", "image_ids" => []}
       invalid_attrs = %{"content" => ""}
 
@@ -118,7 +118,6 @@ defmodule VuePhoenixWeb.PostControllerTest do
         |> post(Routes.post_path(conn, :create), %{valid_attrs | "image_ids" => image_ids})
 
       images_data = json_response(conn, 200)["data"]["relationships"]["images"]["data"]
-
       assert image_ids == Enum.map(images_data, fn image -> image["id"] end)
     end
 

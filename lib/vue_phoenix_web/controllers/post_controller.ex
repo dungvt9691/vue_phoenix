@@ -27,7 +27,10 @@ defmodule VuePhoenixWeb.PostController do
           data: post,
           opts: [
             include: "user,images",
-            fields: %{"user" => "email,first_name,last_name,avatar,full_name", "images" => "attachment"}
+            fields: %{
+              "user" => "email,first_name,last_name,avatar,full_name",
+              "images" => "attachment"
+            }
           ]
         )
 
@@ -71,7 +74,10 @@ defmodule VuePhoenixWeb.PostController do
               data: post,
               opts: [
                 include: "user,images",
-                fields: %{"user" => "email,first_name,last_name,avatar,full_name", "images" => "attachment"}
+                fields: %{
+                  "user" => "email,first_name,last_name,avatar,full_name",
+                  "images" => "attachment"
+                }
               ]
             )
 
