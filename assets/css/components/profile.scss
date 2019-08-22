@@ -1,0 +1,152 @@
+.profile-page{
+  .information{
+    margin-top: 100px;
+    background: $--color-white;
+    border: 1px solid #dddfe2;
+    border-radius: 5px;
+    position: relative;
+    padding: 0 10px;
+    padding-bottom: 10px;
+    &--avatar{
+      position: absolute;
+      top: -85px;
+      left: 10px;
+      padding: 5px;
+      background: white;
+      width: 150px;
+      height: 150px;
+      border: 1px solid #dddfe2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      input[type="file"]{
+        display: none;
+      }
+      .el-progress{
+        position: absolute;
+      }
+      .el-avatar{
+        border-radius: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .mask{
+        position: absolute;
+        left: 5px;
+        right: 5px;
+        bottom: 5px;
+        height: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        transition: all 0.2s ease;
+        color: white;
+        cursor: pointer;
+        i{
+          font-size: 20px;
+          color: white;
+        }
+        *{
+          opacity: 0;
+        }
+      }
+      &:hover{
+        .mask{
+          height: 50px;
+          *{
+            opacity: 1;
+          }
+        }
+      }
+    }
+    &--identify{
+      position: absolute;
+      left: 180px;
+      top: -40px;
+      .el-form{
+        input{
+          width: 90px;
+        }
+      }
+      i{
+        cursor: pointer;
+        &.edit{
+          font-size: 15px;
+          float: right;
+          margin-top: 4px;
+        }
+      }
+    }
+    &--rows{
+      margin-left: 175px;
+      &__row{
+        .el-form{
+          .el-date-editor{
+            width: 150px;
+          }
+        }
+        .el-form-item--small.el-form-item{
+          margin-bottom: 0;
+        }
+      }
+    }
+    &--images{
+      h4{
+        border-bottom: 1px solid #dddfe2;
+        padding-bottom: 5px;
+        font-weight: normal;
+      }
+      .image{
+        position: relative;
+        border-radius: 0;
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 4px;
+        img{
+          width: 100%;
+          cursor: pointer;
+        }
+        .mask{
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0);
+          transition: all 0.2s ease;
+          color: white;
+          cursor: pointer;
+          .el-button{
+            padding: 0;
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            opacity: 0;
+            color: white;
+          }
+        }
+        &:hover{
+          .mask{
+            background: rgba(0, 0, 0, 0.5);
+            .el-button{
+              opacity: 1;
+            }
+          }
+        }
+      }
+      .btn-view-more{
+        width: 100%;
+        background: transparent;
+        &:hover,&:focus,&:active{
+          color: $--color-primary;
+        }
+      }
+    }
+  }
+}

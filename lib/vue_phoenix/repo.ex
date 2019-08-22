@@ -4,4 +4,8 @@ defmodule VuePhoenix.Repo do
     adapter: Ecto.Adapters.Postgres
 
   use Scrivener, page_size: 20
+
+  def reload!(%module{id: id}) do
+    get(module, id)
+  end
 end

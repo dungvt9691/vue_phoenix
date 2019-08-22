@@ -21,7 +21,8 @@ defmodule VuePhoenixWeb.ImageControllerTest do
 
   describe "index" do
     setup %{token: token} do
-      insert_list(10, :image, user: token.user)
+      post = insert(:post, user: token.user)
+      insert_list(10, :image, user: token.user, post: post)
       pagination_params = %{"page" => 1, "limit" => 2}
       include_params = %{"include" => "user", "fields" => %{}}
 
@@ -132,7 +133,12 @@ defmodule VuePhoenixWeb.ImageControllerTest do
 
   describe "show" do
     setup %{token: token} do
-      image = insert(:image, user: token.user)
+      post = insert(:post, user: token.user)
+      post2 = insert(:post, user: token.user)
+      insert(:image, user: token.user, post: post2)
+      image = insert(:image, user: token.user, post: post)
+      next_image = insert(:image, user: token.user, post: post)
+      last_image = insert(:image, user: token.user, post: post2)
 
       conn =
         build_conn()
@@ -140,7 +146,14 @@ defmodule VuePhoenixWeb.ImageControllerTest do
         |> put_req_header("accept", "application/vnd.api+json")
         |> put_req_header("content-type", "application/vnd.api+json")
 
-      [image: image, conn: conn]
+      [
+        post: post,
+        post2: post2,
+        image: image,
+        next_image: next_image,
+        last_image: last_image,
+        conn: conn
+      ]
     end
 
     test "successfully", %{image: image, conn: conn} do
@@ -157,6 +170,74 @@ defmodule VuePhoenixWeb.ImageControllerTest do
         |> get(Routes.image_path(conn, :show, "aaa-bbb"))
 
       assert conn.status == 404
+    end
+
+    test "siblings meta without post_id", %{
+      image: image,
+      post: post,
+      post2: post2,
+      next_image: next_image,
+      last_image: last_image,
+      conn: conn
+    } do
+      conn =
+        conn
+        |> get(Routes.image_path(conn, :show, next_image.external_id))
+
+      assert json_response(conn, 200)["meta"]["siblings"] == %{
+               "prev" => %{
+                 "id" => image.external_id,
+                 "post_id" => post.external_id
+               },
+               "next" => %{
+                 "id" => last_image.external_id,
+                 "post_id" => post2.external_id
+               }
+             }
+    end
+
+    test "siblings meta with post_id and there is not prev image", %{
+      post: post,
+      image: image,
+      next_image: next_image,
+      conn: conn
+    } do
+      conn =
+        conn
+        |> get(Routes.image_path(conn, :show, next_image.external_id, post_id: post.external_id))
+
+      assert json_response(conn, 200)["meta"]["siblings"] == %{
+               "prev" => %{
+                 "id" => image.external_id,
+                 "post_id" => post.external_id
+               },
+               "next" => %{
+                 "id" => image.external_id,
+                 "post_id" => post.external_id
+               }
+             }
+    end
+
+    test "siblings meta with post_id and there is not next image", %{
+      post: post,
+      image: image,
+      next_image: next_image,
+      conn: conn
+    } do
+      conn =
+        conn
+        |> get(Routes.image_path(conn, :show, image.external_id, post_id: post.external_id))
+
+      assert json_response(conn, 200)["meta"]["siblings"] == %{
+               "prev" => %{
+                 "id" => next_image.external_id,
+                 "post_id" => post.external_id
+               },
+               "next" => %{
+                 "id" => next_image.external_id,
+                 "post_id" => post.external_id
+               }
+             }
     end
   end
 

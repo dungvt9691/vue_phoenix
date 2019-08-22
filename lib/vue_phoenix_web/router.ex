@@ -23,6 +23,7 @@ defmodule VuePhoenixWeb.Router do
     pipe_through :authenticate
     delete "/auth", SessionsController, :delete
     get "/profile", Users.ProfileController, :show
+    get "/users/posts", Users.PostController, :index
     put "/profile", Users.ProfileController, :update
 
     resources "/posts", PostController, except: [:new, :edit] do

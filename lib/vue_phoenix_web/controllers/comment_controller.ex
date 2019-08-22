@@ -27,7 +27,7 @@ defmodule VuePhoenixWeb.CommentController do
           data: comment,
           opts: [
             include: "user",
-            fields: %{"user" => "email,first_name,last_name,avatar"}
+            fields: %{"user" => "email,first_name,last_name,full_name,avatar"}
           ]
         )
 
@@ -53,7 +53,7 @@ defmodule VuePhoenixWeb.CommentController do
               data: comment,
               opts: [
                 include: "user",
-                fields: %{"user" => "email,first_name,last_name,avatar"}
+                fields: %{"user" => "email,first_name,last_name,full_name,avatar"}
               ]
             )
 

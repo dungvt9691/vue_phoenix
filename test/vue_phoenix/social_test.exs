@@ -86,7 +86,7 @@ defmodule VuePhoenix.SocialTest do
   describe "create_post" do
     setup do
       user = insert(:user)
-      images = insert_list(5, :image)
+      images = insert_list(5, :image, user: user)
       valid_attrs = %{"content" => "Content", "image_ids" => []}
       invalid_attrs = %{"content" => ""}
       [user: user, valid_attrs: valid_attrs, invalid_attrs: invalid_attrs, images: images]
@@ -148,11 +148,12 @@ defmodule VuePhoenix.SocialTest do
   describe "list_images" do
     setup do
       user = insert(:user)
-      insert_list(10, :image, user: user)
+      post = insert(:post, user: user)
+      insert_list(10, :image, user: user, post: post)
 
       images =
         Image
-        |> preload([:user])
+        |> preload([:user, :post])
         |> order_by(desc: :id)
         |> Repo.all()
 
@@ -190,7 +191,7 @@ defmodule VuePhoenix.SocialTest do
 
       image =
         Image
-        |> preload([:user])
+        |> preload([:user, :post])
         |> Repo.get(image.id)
 
       [image: image]

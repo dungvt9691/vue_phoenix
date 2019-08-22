@@ -51,15 +51,9 @@
         Sign up
       </el-button>
       <span class="px-1">or</span>
-      <el-button
-        class="btn-facebook mt-1"
-        type="primary"
-        @click="submitForm('signUpForm')"
-        :loading="callingAPI"
-      >
-        <i class="fab fa-facebook-f mr-1"></i>
+      <facebook-auth @updateCallingAPI="updateCallingAPI">
         Sign up with Facebook
-      </el-button>
+      </facebook-auth>
     </el-form-item>
     <el-row class="mt-4" :gutter="20">
       <el-col :span="12">
@@ -81,9 +75,14 @@
 import axios from 'axios';
 import userServices from '../../services/users';
 import { parseError } from '../../lib/common';
+import ENDPOINT from '../../config/endpoint';
+import FacebookAuth from './FacebookAuth.vue';
 
 export default {
   name: 'SignUpForm',
+  components: {
+    FacebookAuth,
+  },
   data() {
     const validatePass = (rule, value, callback) => {
       if (value === '') {
@@ -119,9 +118,11 @@ export default {
           { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
         ],
         password: [
+          { required: true, message: 'Please input the password', trigger: 'blur' },
           { validator: validatePass, trigger: 'blur' },
         ],
         passwordConfirmation: [
+          { required: true, message: 'Please input the password again', trigger: 'blur' },
           { validator: validatePass2, trigger: 'blur' },
         ],
       },
@@ -133,12 +134,16 @@ export default {
     };
   },
   methods: {
+    updateCallingAPI(callingAPI) {
+      this.callingAPI = callingAPI;
+    },
+
     submitForm(formName) {
-      this.errors = {};
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.errors = {};
           this.callingAPI = true;
-          axios.post('/api/register', {
+          axios.post(ENDPOINT.REGISTER, {
             email: this.signUpForm.email,
             password: this.signUpForm.password,
             password_confirmation: this.signUpForm.passwordConfirmation,

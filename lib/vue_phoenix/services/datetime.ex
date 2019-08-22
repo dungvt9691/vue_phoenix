@@ -10,12 +10,4 @@ defmodule VuePhoenix.Services.DateTime do
       _ -> date_as_string
     end
   end
-
-  def parse_date(date_as_string, format) do
-    with {:ok, date} <- Timex.parse(date_as_string, format, :strftime) do
-      date
-    else
-      _ -> nil
-    end
-  end
 end

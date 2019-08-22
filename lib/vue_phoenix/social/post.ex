@@ -5,13 +5,12 @@ defmodule VuePhoenix.Social.Post do
   import Ecto.Changeset
 
   alias VuePhoenix.Identify.User
-  alias VuePhoenix.Social.{Comment, PostImage}
+  alias VuePhoenix.Social.{Comment, Image}
 
   schema "posts" do
     belongs_to :user, User
     has_many :comments, Comment
-    has_many :post_images, PostImage
-    has_many :images, through: [:post_images, :image]
+    has_many :images, Image
 
     field :content, :string
     field :external_id, Ecto.UUID, autogenerate: true

@@ -9,6 +9,11 @@ defmodule VuePhoenixWeb.ImageView do
     include: false,
     identifiers: :when_included
 
+  has_one :post,
+    serializer: VuePhoenixWeb.PostView,
+    include: false,
+    identifiers: :when_included
+
   def attachment(image, _conn) do
     VuePhoenix.Image.urls({image.attachment, image})
   end

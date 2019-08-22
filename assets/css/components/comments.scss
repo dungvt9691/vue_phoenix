@@ -1,0 +1,99 @@
+.comments{
+  &--list{
+    .view-more{
+      display: flex;
+      justify-content: space-between;
+      > span{
+        padding: 9px 0;
+        font-size: 12px;
+        color: #606770;
+      }
+    }
+    .comment{
+      padding: 0 15px;
+      padding-right: 40px;
+      margin-top: 10px;
+      &:last-child{
+        margin-bottom: 10px;
+      }
+      &__user{
+        display: flex;
+      }
+      &__content{
+        position: relative;
+        .content{
+          padding: 8px 10px;
+          background-color: #f2f3f5;
+          border-radius: 10px;
+          box-sizing: border-box;
+          display: inline-block;
+          line-height: 16px;
+          margin: 0;
+          max-width: 100%;
+          word-wrap: break-word;
+          position: relative;
+          white-space: normal;
+          word-break: break-word;
+          .read-more{
+            color: $--color-primary;
+            cursor: pointer;
+            &:hover{
+              text-decoration: underline;
+            }
+          }
+        }
+        .created{
+          color: $--color-muted;
+          font-size: 12px;
+          margin-top: 5px;
+          display: block;
+        }
+      }
+      &__actions{
+        position: absolute;
+        top: 0;
+        right: -20px;
+        &:not(.active){
+          display: none;
+        }
+      }
+      &:hover{
+        .comment__actions{
+          display: block;
+        }
+      }
+      &__editForm{
+        width: 100%;
+        .hint{
+          font-size: 10px;
+          color: $--color-muted;
+          line-height: 20px;
+          .el-button{
+            font-size: 10px;
+          }
+        }
+      }
+    }
+  }
+  &--new{
+    display: flex;
+    align-items: center;
+    padding: 5px 15px;
+    padding-bottom: 6px;
+  }
+  .el-form{
+    width: 100%;
+    &-item{
+      width: 100%;
+      margin-bottom: 0;
+      &__content{
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+    .el-textarea__inner{
+      width: 100%;
+      border-radius: 18px;
+    }
+  }
+}

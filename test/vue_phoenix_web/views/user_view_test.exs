@@ -15,7 +15,8 @@ defmodule VuePhoenixWeb.UserViewTest do
              "avatar" => VuePhoenix.Avatar.urls({profile.avatar, profile}),
              "birthday" => profile.birthday,
              "first_name" => profile.first_name,
-             "last_name" => profile.last_name
+             "last_name" => profile.last_name,
+             "full_name" => nil
            }
   end
 end

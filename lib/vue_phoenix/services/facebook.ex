@@ -1,8 +1,6 @@
 defmodule VuePhoenix.Services.Facebook do
-  alias VuePhoenix.Services.DateTime
-
   @moduledoc false
-  @fields "birthday,email,first_name,last_name,middle_name,picture.type(large)"
+  @fields "email,first_name,last_name,middle_name,picture.type(large)"
 
   def sign_in(access_token) do
     case Facebook.me(@fields, access_token) do
@@ -33,7 +31,6 @@ defmodule VuePhoenix.Services.Facebook do
        email: response["email"],
        first_name: "#{response["middle_name"]} #{response["first_name"]}",
        last_name: response["last_name"],
-       birthday: DateTime.parse_date(response["birthday"], "%d/%m/%Y"),
        avatar: response["avatar"]
      }}
   end

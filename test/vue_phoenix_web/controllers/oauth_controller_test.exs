@@ -34,7 +34,6 @@ defmodule VuePhoenixWeb.OauthControllerTest do
                  "first_name" => "Dung",
                  "middle_name" => "The",
                  "last_name" => "Vu",
-                 "birthday" => "06/09/1991",
                  "picture" => %{
                    "data" => %{
                      "url" => image_url

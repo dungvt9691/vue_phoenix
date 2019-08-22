@@ -1,10 +1,13 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import HomeScreen from './views/home/index.vue';
+import ProfileScreen from './views/profile/show.vue';
+import ImageScreen from './views/images/show.vue';
+import PostScreen from './views/posts/show.vue';
 import SignInScreen from './views/sessions/new.vue';
 import SignUpScreen from './views/registrations/new.vue';
 import ForgotPasswordScreen from './views/passwords/new.vue';
-import ChangePasswordScreen from './views/passwords/edit.vue';
+import ResetPasswordScreen from './views/passwords/edit.vue';
 
 import userServices from './services/users';
 
@@ -17,6 +20,24 @@ const router = new Router({
       path: '/',
       name: 'HomeScreen',
       component: HomeScreen,
+      meta: { auth: true },
+    },
+    {
+      path: '/profile',
+      name: 'ProfileScreen',
+      component: ProfileScreen,
+      meta: { auth: true },
+    },
+    {
+      path: '/images/:postId/:show/:id/',
+      name: 'ImageScreen',
+      component: ImageScreen,
+      meta: { auth: true },
+    },
+    {
+      path: '/posts/:id',
+      name: 'PostScreen',
+      component: PostScreen,
       meta: { auth: true },
     },
     {
@@ -38,9 +59,9 @@ const router = new Router({
       meta: { auth: false },
     },
     {
-      path: '/change-password',
-      name: 'ChangePasswordScreen',
-      component: ChangePasswordScreen,
+      path: '/reset-password',
+      name: 'ResetPasswordScreen',
+      component: ResetPasswordScreen,
       meta: { auth: false },
     },
   ],

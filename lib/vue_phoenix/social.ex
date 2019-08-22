@@ -6,10 +6,18 @@ defmodule VuePhoenix.Social do
 
   alias VuePhoenix.Repo
   alias VuePhoenix.Social
-  alias VuePhoenix.Social.{Image, Post, PostImage}
+  alias VuePhoenix.Social.{Image, Post}
 
   def list_posts(params \\ %{}) do
     Post
+    |> preload([:user, :images])
+    |> order_by(desc: :id)
+    |> Repo.paginate(page: params["page"], page_size: params["limit"])
+  end
+
+  def list_posts_by_user!(current_user, params \\ %{}) do
+    Post
+    |> where([i], i.user_id == ^current_user.id)
     |> preload([:user, :images])
     |> order_by(desc: :id)
     |> Repo.paginate(page: params["page"], page_size: params["limit"])
@@ -37,24 +45,25 @@ defmodule VuePhoenix.Social do
       |> Ecto.build_assoc(:posts)
       |> Post.changeset(attrs)
       |> Repo.insert()
-      |> add_post_images(attrs)
+      |> add_post_images(current_user, attrs)
       |> Repo.preload([:user, :images])
     end)
   end
 
-  defp add_post_images({:error, changeset}, _attrs), do: Repo.rollback(changeset)
+  defp add_post_images({:error, changeset}, _current_user, _attrs), do: Repo.rollback(changeset)
 
-  defp add_post_images({:ok, post}, attrs) do
+  defp add_post_images({:ok, post}, current_user, attrs) do
     Enum.each(attrs["image_ids"] || [], fn image_id ->
-      case Social.get_image!(image_id) do
+      case Social.get_image_by_user!(current_user, image_id) do
         nil ->
           post
 
         image ->
+          image
+          |> Image.changeset_for_update(%{post_id: post.id})
+          |> Repo.update()
+
           post
-          |> Ecto.build_assoc(:post_images)
-          |> PostImage.changeset(%{image_id: image.id})
-          |> Repo.insert()
       end
     end)
 
@@ -69,20 +78,28 @@ defmodule VuePhoenix.Social do
   end
 
   def delete_post(%Post{} = post) do
+    post =
+      post
+      |> Repo.preload(:images)
+
+    Enum.each(post.images, fn image ->
+      Social.delete_image(image)
+    end)
+
     Repo.delete(post)
   end
 
   def list_images(current_user, params \\ %{}) do
     Image
-    |> preload([:user])
-    |> where([i], i.user_id == ^current_user.id)
+    |> preload([:user, :post])
+    |> where([i], i.user_id == ^current_user.id and not is_nil(i.post_id))
     |> order_by(desc: :id)
     |> Repo.paginate(page: params["page"], page_size: params["limit"])
   end
 
   def get_image!(id) do
     Image
-    |> preload([:user])
+    |> preload([:user, :post])
     |> Repo.get_by!(%{external_id: id})
   rescue
     _err -> nil
@@ -105,13 +122,17 @@ defmodule VuePhoenix.Social do
     case Repo.insert(image) do
       {:ok, image} ->
         image
-        |> Repo.preload([:user])
+        |> Repo.preload([:user, :post])
         |> Image.changeset_for_update(attrs)
         |> Repo.update()
     end
   end
 
   def delete_image(%Image{} = image) do
+    if image.attachment do
+      VuePhoenix.Image.delete({image.attachment, image})
+    end
+
     Repo.delete(image)
   end
 

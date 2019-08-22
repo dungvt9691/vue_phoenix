@@ -67,11 +67,7 @@ config :vue_phoenix, VuePhoenix.Mailer,
   server: {:system, "SMTP_SERVER"},
   port: {:system, "SMTP_PORT"},
   username: {:system, "SMTP_USERNAME"},
-  password: {:system, "SMTP_PASSWORD"},
-  tls: :if_available,
-  ssl: false,
-  retries: 1,
-  auth: :if_available
+  password: {:system, "SMTP_PASSWORD"}
 
 config :facebook,
   app_id: System.get_env("FACEBOOK_APP_ID"),
