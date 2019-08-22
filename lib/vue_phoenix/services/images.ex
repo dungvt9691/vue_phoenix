@@ -39,7 +39,7 @@ defmodule VuePhoenix.Services.Images do
       case post_id do
         nil ->
           from i in Image,
-            where: i.id > ^image.id and i.user_id == ^image.user_id,
+            where: i.id > ^image.id and i.user_id == ^image.user_id and not is_nil(i.post_id),
             order_by: ^order_by,
             limit: 1
 
@@ -71,7 +71,7 @@ defmodule VuePhoenix.Services.Images do
       case post_id do
         nil ->
           from i in Image,
-            where: i.id < ^image.id and i.user_id == ^image.user_id,
+            where: i.id < ^image.id and i.user_id == ^image.user_id and not is_nil(i.post_id),
             order_by: ^order_by,
             limit: 1
 

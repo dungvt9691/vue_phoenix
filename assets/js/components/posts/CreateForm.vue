@@ -115,7 +115,23 @@ export default {
       },
     };
   },
+  beforeMount() {
+    window.addEventListener('beforeunload', this.handleUnloadPage);
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.handleUnloadPage);
+  },
   methods: {
+    handleUnloadPage(event) {
+      if (this.postImages.length > 0 || this.createPostForm.content !== '') {
+        event.preventDefault();
+        event.returnValue = null;
+        this.postImages.forEach((image) => {
+          this.callAPIDeleteImage(image.id);
+        });
+      }
+    },
+
     ...mapActions(['updateUploadedImages', 'updateTotalImages']),
 
     checkUploading() {
@@ -225,33 +241,37 @@ export default {
         cancelButtonText: 'Cancel',
         type: 'warning',
       }).then(() => {
-        axios.delete(`${ENDPOINT.USER_IMAGES}/${id}`, {
-          headers: {
-            Authorization: `Bearer ${userServices.accessToken()}`,
-          },
-        })
-          .then(() => {
-            this.postImages = this.postImages.filter(image => image.id !== id);
-          })
-          .catch((err) => {
-            const { response } = err;
-            let message = '';
-            switch (response.status) {
-              case 404:
-                message = 'File not found';
-                break;
-              default:
-                message = 'Something went wrong';
-                break;
-            }
-
-            this.$notify.error({
-              title: 'Error',
-              message,
-            });
-          });
+        this.callAPIDeleteImage(id);
       }).catch(() => {
       });
+    },
+
+    callAPIDeleteImage(id) {
+      axios.delete(`${ENDPOINT.USER_IMAGES}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${userServices.accessToken()}`,
+        },
+      })
+        .then(() => {
+          this.postImages = this.postImages.filter(image => image.id !== id);
+        })
+        .catch((err) => {
+          const { response } = err;
+          let message = '';
+          switch (response.status) {
+            case 404:
+              message = 'File not found';
+              break;
+            default:
+              message = 'Something went wrong';
+              break;
+          }
+
+          this.$notify.error({
+            title: 'Error',
+            message,
+          });
+        });
     },
   },
 };
